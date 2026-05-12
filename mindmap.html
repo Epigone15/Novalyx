@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mindmap Ultra</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        #toolbar {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        
+        #toolbar button, #toolbar input {
+            padding: 8px 12px;
+            border: none;
+            background: #0078ff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #toolbar button:hover {
+            background: #005fcc;
+        }
+        
+        #colorPicker {
+            width: 40px;
+            padding: 0;
+            cursor: pointer;
+        }
+        
+        .node {
+            position: absolute;
+            padding: 12px 18px;
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #0078ff;
+            cursor: grab;
+            user-select: none;
+            font-size: 15px;
+            min-width: 80px;
+            text-align: center;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        body.dark {
+            background: #1e1e1e;
+            color: white;
+        }
+        
+        body.dark .node {
+            background: #2c2c2c;
+            border-color: #66aaff;
+            color: white;
+        }
+        
+        body.dark #toolbar {
+            background: #2c2c2c;
+            color: white;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            color: #0078ff;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        
+        body.dark .back-button {
+            background: #2c2c2c;
+            color: #66aaff;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Retour</a>
+    <div id="toolbar">
+        <button id="addNode">Ajouter une bulle</button>
+        <input type="color" id="colorPicker" value="#0078ff">
+        <button id="toggleDark">Mode sombre</button>
+        <button id="exportPNG">Exporter PNG</button>
+        <button id="saveMap">Exporter JSON</button>
+        <button id="loadMap">Importer JSON</button>
+    </div>
+    
+    <canvas id="lines"></canvas>
+    
+    <script>
+        const canvas = document.getElementById("lines");
+        const ctx = canvas.getContext("2d");
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let nodes = [];
+        let links = [];
+        let selectedNode = null;
+        let offsetX = 0, offsetY = 0;
+        let scale = 1;
+        
+        function createNode(x, y, text="Nouvelle idée", color="#0078ff") {
+            const div = document.createElement("div");
+            div.className = "node";
+            div.style.left = x + "px";
+            div.style.top = y + "px";
+            div.style.borderColor = color;
+            div.textContent = text;
+            document.body.appendChild(div);
+            
+            const node = { element: div, x, y, color };
+            nodes.push(node);
+            
+            div.addEventListener("mousedown", e => {
+                selectedNode = node;
+                offsetX = e.clientX - node.x;
+                offsetY = e.clientY - node.y;
+            });
+            
+            div.addEventListener("dblclick", () => {
+                const newText = prompt("Modifier le texte :", div.textContent);
+                if (newText) div.textContent = newText;
+            });
+            
+            div.addEventListener("click", () => {
+                const newColor = document.getElementById("colorPicker").value;
+                node.color = newColor;
+                div.style.borderColor = newColor;
+                drawLines();
+            });
+            
+            return node;
+        }
+        
+        document.addEventListener("mousemove", e => {
+            if (selectedNode) {
+                selectedNode.x = e.clientX - offsetX;
+                selectedNode.y = e.clientY - offsetY;
+                selectedNode.element.style.left = selectedNode.x + "px";
+                selectedNode.element.style.top = selectedNode.y + "px";
+                drawLines();
+            }
+        });
+        
+        document.addEventListener("mouseup", () => selectedNode = null);
+        
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            links.forEach(link => {
+                const a = link.a;
+                const b = link.b;
+                ctx.strokeStyle = a.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(a.x + 60, a.y + 20);
+                ctx.lineTo(b.x + 60, b.y + 20);
+                ctx.stroke();
+            });
+        }
+        
+        document.getElementById("addNode").onclick = () => {
+            createNode(200, 200);
+        };
+        
+        document.addEventListener("contextmenu", e => {
+            e.preventDefault();
+            const clicked = nodes.find(n =>
+                e.clientX >= n.x && e.clientX <= n.x + n.element.offsetWidth &&
+                e.clientY >= n.y && e.clientY <= n.y + n.element.offsetHeight
+            );
+            
+            if (!clicked) return;
+            
+            if (!window.firstNode) {
+                window.firstNode = clicked;
+                clicked.element.style.borderColor = "red";
+            } else {
+                links.push({ a: window.firstNode, b: clicked });
+                window.firstNode.element.style.borderColor = window.firstNode.color;
+                window.firstNode = null;
+                drawLines();
+            }
+        });
+        
+        document.getElementById("toggleDark").onclick = () => {
+            document.body.classList.toggle("dark");
+        };
+        
+        document.addEventListener("wheel", e => {
+            if (!e.ctrlKey) return;
+            e.preventDefault();
+            const zoomIntensity = 0.1;
+            const delta = e.deltaY < 0 ? 1 + zoomIntensity : 1 - zoomIntensity;
+            scale *= delta;
+            scale = Math.min(Math.max(scale, 0.3), 3);
+            document.body.style.transform = `scale(${scale})`;
+            document.body.style.transformOrigin = "0 0";
+        });
+        
+        document.getElementById("exportPNG").onclick = () => {
+            const exportCanvas = document.createElement("canvas");
+            exportCanvas.width = window.innerWidth;
+            exportCanvas.height = window.innerHeight;
+            const ctx2 = exportCanvas.getContext("2d");
+            
+            ctx2.fillStyle = getComputedStyle(document.body).backgroundColor;
+            ctx2.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            ctx2.drawImage(canvas, 0, 0);
+            
+            nodes.forEach(n => {
+                const rect = n.element.getBoundingClientRect();
+                ctx2.fillStyle = getComputedStyle(n.element).backgroundColor;
+                ctx2.strokeStyle = n.color;
+                ctx2.lineWidth = 2;
+                ctx2.beginPath();
+                ctx2.roundRect(rect.left, rect.top, rect.width, rect.height, 20);
+                ctx2.fill();
+                ctx2.stroke();
+                ctx2.fillStyle = getComputedStyle(n.element).color;
+                ctx2.font = "15px Arial";
+                ctx2.textAlign = "center";
+                ctx2.fillText(
+                    n.element.textContent,
+                    rect.left + rect.width / 2,
+                    rect.top + rect.height / 2 + 5
+                );
+            });
+            
+            const link = document.createElement("a");
+            link.download = "mindmap.png";
+            link.href = exportCanvas.toDataURL("image/png");
+            link.click();
+        };
+        
+        document.getElementById("saveMap").onclick = () => {
+            const data = {
+                nodes: nodes.map(n => ({
+                    x: n.x,
+                    y: n.y,
+                    text: n.element.textContent,
+                    color: n.color
+                })),
+                links: links.map(l => ({
+                    a: nodes.indexOf(l.a),
+                    b: nodes.indexOf(l.b)
+                }))
+            };
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "mindmap.json";
+            a.click();
+        };
+        
+        document.getElementById("loadMap").onclick = () => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "application/json";
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const data = JSON.parse(reader.result);
+                    nodes.forEach(n => n.element.remove());
+                    nodes = [];
+                    links = [];
+                    data.nodes.forEach(n => createNode(n.x, n.y, n.text, n.color));
+                    data.links.forEach(l => links.push({
+                        a: nodes[l.a],
+                        b: nodes[l.b]
+                    }));
+                    drawLines();
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        };
+    </script>
+</body>
+</html>
