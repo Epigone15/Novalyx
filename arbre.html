@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Arbre genealogique</title>
+    <title>Arbre généalogique - Novalyx</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -240,7 +240,7 @@
             const blob = new Blob([JSON.stringify(data)]);
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = "arbre.json";
+            a.download = "arbre-novalyx.json";
             a.click();
         };
         
