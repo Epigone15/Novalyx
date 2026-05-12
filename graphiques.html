@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphiques</title>
+    <title>Graphiques - Novalyx</title>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -113,7 +113,7 @@
 <body>
     <a href="index.html" class="back-button">← Retour</a>
     <div class="container">
-        <h1>📊 Graphiques Ultra-Pro v3</h1>
+        <h1>📊 Graphiques - Novalyx</h1>
         
         <div class="controls">
             <select id="chartType">
@@ -222,7 +222,7 @@
             chart.dataURI().then(({ imgURI }) => {
                 const link = document.createElement("a");
                 link.href = imgURI;
-                link.download = "graphique.png";
+                link.download = "graphique-novalyx.png";
                 link.click();
             });
         }
@@ -237,7 +237,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = "données.csv";
+            link.download = "données-novalyx.csv";
             link.click();
         }
         
