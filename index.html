@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Site Ultra</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --text: #e2e8f0;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            color: #9ca3af;
+            font-size: 1.2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(56, 189, 248, 0.2);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card p {
+            margin: 0;
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #9ca3af;
+            font-size: 0.9rem;
+            background: #1e293b;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌐 Mon Site Ultra</h1>
+        <p>Outils interactifs pour tout visualiser</p>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <a href="carte-monde.html" class="card">
+                <div class="card-icon">🌍</div>
+                <h3>Carte du Monde</h3>
+                <p>Colorie les pays du monde</p>
+            </a>
+            
+            <a href="graphiques.html" class="card">
+                <div class="card-icon">📊</div>
+                <h3>Graphiques</h3>
+                <p>Crée des graphiques interactifs</p>
+            </a>
+            
+            <a href="timeline.html" class="card">
+                <div class="card-icon">📜</div>
+                <h3>Timeline</h3>
+                <p>Crée une frise chronologique</p>
+            </a>
+            
+            <a href="mindmap.html" class="card">
+                <div class="card-icon">🧠</div>
+                <h3>Mindmap</h3>
+                <p>Crée des cartes mentales</p>
+            </a>
+            
+            <a href="arbre.html" class="card">
+                <div class="card-icon">🌳</div>
+                <h3>Arbre Généalogique</h3>
+                <p>Construis ton arbre familial</p>
+            </a>
+            
+            <a href="france.html" class="card">
+                <div class="card-icon">🇫🇷</div>
+                <h3>Carte de France</h3>
+                <p>Colorie les départements</p>
+            </a>
+            
+            <a href="convertisseur.html" class="card">
+                <div class="card-icon">⚡</div>
+                <h3>Convertisseur</h3>
+                <p>Convertis tout type d'unités</p>
+            </a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Créé avec ❤️ | 2026</p>
+    </footer>
+</body>
+</html>
