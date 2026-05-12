@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Ultra</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            font-size: 1.8em;
+            background: #020617;
+        }
+        
+        .controls {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        input, button, select {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 6px;
+            border: none;
+        }
+        
+        button {
+            background: #38bdf8;
+            cursor: pointer;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px;
+        }
+        
+        .vertical::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: #38bdf8;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+        }
+        
+        .vertical .event {
+            width: 50%;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .vertical .left { left: 0; }
+        .vertical .right { left: 50%; }
+        
+        .vertical .event::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #38bdf8;
+            border-radius: 50%;
+            top: 20px;
+            right: -6px;
+        }
+        
+        .vertical .right::before {
+            left: -6px;
+        }
+        
+        .horizontal {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+        }
+        
+        .horizontal .event {
+            min-width: 200px;
+        }
+        
+        .event-content {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        .event-content:hover {
+            background: #334155;
+        }
+        
+        .details {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .context-menu {
+            position: absolute;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 8px 0;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            min-width: 150px;
+        }
+        
+        .context-menu.show {
+            display: block;
+        }
+        
+        .context-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 12px;
+            margin: 0;
+            background: none;
+            border: none;
+            color: white;
+        }
+        
+        .context-menu button:hover {
+            background: #334155;
+        }
+        
+        .editing {
+            background: #0f172a;
+            border: 1px solid #38bdf8;
+        }
+        
+        .editing input {
+            width: 100%;
+            margin: 4px 0;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #38bdf8;
+        }
+        
+        @media(max-width:700px){
+            .vertical .event {
+                width: 100%;
+                left: 0 !important;
+            }
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #1e293b;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Retour</a>
+    <header>📜 Timeline Ultra</header>
+    
+    <div class="controls">
+        <input id="title" placeholder="Titre">
+        <input id="date" type="date">
+        <input id="desc" placeholder="Description">
+        <button onclick="addEvent()">Ajouter</button>
+        <select id="mode" onchange="render()">
+            <option value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
+        </select>
+        <button onclick="exportJSON()">Export JSON</button>
+        <button onclick="exportHTML()">Export HTML</button>
+    </div>
+    
+    <div id="timeline" class="timeline vertical"></div>
+    <div id="contextMenu" class="context-menu">
+        <button onclick="editEvent()">Modifier</button>
+        <button onclick="deleteEvent()">Supprimer</button>
+    </div>
+    
+    <script>
+        let events = [
+            {date:"2020-01-01", title:"Début", desc:"Premier événement"},
+            {date:"2025-01-01", title:"Projet", desc:"Ton site"},
+        ];
+        
+        let currentEventIndex = -1;
+        let contextMenu = document.getElementById("contextMenu");
+        
+        function render(){
+            const container = document.getElementById("timeline");
+            const mode = document.getElementById("mode").value;
+            container.className = "timeline " + mode;
+            container.innerHTML = "";
+            
+            events.sort((a,b)=> new Date(a.date)-new Date(b.date));
+            
+            events.forEach((e,i)=>{
+                const div = document.createElement("div");
+                div.className = "event " + (mode==="vertical" ? (i%2?"right":"left"):"");
+                div.dataset.index = i;
+                div.innerHTML = `
+                    <div class="event-content" oncontextmenu="showContextMenu(event, ${i})" ondblclick="startEditing(${i})">
+                        <b>${e.title}</b><br>
+                        <small>${e.date}</small>
+                        <div class="details">${e.desc}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function showContextMenu(e, index) {
+            e.preventDefault();
+            currentEventIndex = index;
+            contextMenu.style.left = e.pageX + "px";
+            contextMenu.style.top = e.pageY + "px";
+            contextMenu.classList.add("show");
+        }
+        
+        document.addEventListener("click", () => {
+            contextMenu.classList.remove("show");
+        });
+        
+        function startEditing(index) {
+            const event = events[index];
+            const eventDiv = document.querySelector(`[data-index="${index}"] .event-content`);
+            eventDiv.innerHTML = `
+                <input type="text" id="editTitle" value="${event.title}" placeholder="Titre">
+                <input type="date" id="editDate" value="${event.date}">
+                <input type="text" id="editDesc" value="${event.desc}" placeholder="Description">
+                <button onclick="saveEdit(${index})">Enregistrer</button>
+            `;
+            eventDiv.classList.add("editing");
+        }
+        
+        function saveEdit(index) {
+            const title = document.getElementById("editTitle").value;
+            const date = document.getElementById("editDate").value;
+            const desc = document.getElementById("editDesc").value;
+            if (!title || !date) return alert("Remplis les champs !");
+            events[index] = { title, date, desc };
+            render();
+        }
+        
+        function editEvent() {
+            if (currentEventIndex !== -1) {
+                startEditing(currentEventIndex);
+            }
+        }
+        
+        function deleteEvent() {
+            if (currentEventIndex !== -1 && confirm("Supprimer cet événement ?")) {
+                events.splice(currentEventIndex, 1);
+                render();
+            }
+        }
+        
+        function addEvent(){
+            const t = document.getElementById("title").value;
+            const d = document.getElementById("date").value;
+            const desc = document.getElementById("desc").value;
+            if(!t||!d) return alert("Remplis les champs !");
+            events.push({title:t,date:d,desc});
+            render();
+            document.getElementById("title").value = "";
+            document.getElementById("date").value = "";
+            document.getElementById("desc").value = "";
+        }
+        
+        function exportJSON(){
+            const data = JSON.stringify(events, null, 2);
+            download(data, "timeline.json");
+        }
+        
+        function exportHTML(){
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"><title>Timeline Export</title></head>
+                <body style="font-family:Arial">
+                <h1>Timeline</h1>
+                <ul>
+                    ${events.map(e=>`<li><b>${e.date}</b> - ${e.title} : ${e.desc}</li>`).join("")}
+                </ul>
+                </body>
+                </html>`;
+            download(html, "timeline.html");
+        }
+        
+        function download(content, file){
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([content]));
+            a.download = file;
+            a.click();
+        }
+        
+        render();
+    </script>
+</body>
+</html>
