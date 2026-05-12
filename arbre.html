@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Arbre libre clean</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin:0;
+            overflow:hidden;
+            font-family:Arial;
+            background:#f0f0f0;
+        }
+        
+        #toolbar {
+            position:fixed;
+            top:10px;
+            left:10px;
+            background:white;
+            padding:10px;
+            border-radius:10px;
+            display:flex;
+            gap:10px;
+            z-index:10;
+        }
+        
+        #toolbar button {
+            padding:6px 10px;
+            border:none;
+            background:#0078ff;
+            color:white;
+            border-radius:5px;
+            cursor:pointer;
+        }
+        
+        #container {
+            position:absolute;
+            transform-origin:0 0;
+        }
+        
+        .node {
+            position:absolute;
+            padding:10px;
+            border-radius:50px;
+            border:2px solid #0078ff;
+            background:white;
+            cursor:grab;
+            min-width:100px;
+            text-align:center;
+        }
+        
+        .handle {
+            position:absolute;
+            width:12px;
+            height:12px;
+            background:#0078ff;
+            border-radius:50%;
+            cursor:pointer;
+            z-index:11;
+            transform: translate(-50%, -50%);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            color: #0078ff;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Retour</a>
+    <div id="toolbar">
+        <button id="addNode">Personne</button>
+        <button id="addLine">Ajouter ligne</button>
+        <button id="save">Exporter</button>
+        <button id="load">Importer</button>
+    </div>
+    
+    <div id="container">
+        <svg id="svg" width="4000" height="3000"></svg>
+    </div>
+    
+    <script>
+        const container = document.getElementById("container");
+        const svg = document.getElementById("svg");
+        
+        let nodes = [];
+        let lines = [];
+        let scale = 1, panX = 0, panY = 0;
+        
+        function createNode(x, y, text = "Nom\n(1900-2000)") {
+            const div = document.createElement("div");
+            div.className = "node";
+            div.style.left = x + "px";
+            div.style.top = y + "px";
+            div.innerText = text;
+            container.appendChild(div);
+            
+            const node = { x, y, text, el: div };
+            nodes.push(node);
+            
+            let offsetX, offsetY;
+            
+            div.onmousedown = e => {
+                e.stopPropagation();
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+                document.onmousemove = ev => {
+                    node.x = (ev.clientX - panX) / scale - offsetX;
+                    node.y = (ev.clientY - panY) / scale - offsetY;
+                    div.style.left = node.x + "px";
+                    div.style.top = node.y + "px";
+                };
+                document.onmouseup = () => document.onmousemove = null;
+            };
+            
+            div.oncontextmenu = e => {
+                e.preventDefault();
+                const t = prompt("Nom + dates", div.innerText);
+                if (t) {
+                    div.innerText = t;
+                    node.text = t;
+                }
+            };
+        }
+        
+        function createLine(x1 = 100, y1 = 100, x2 = 200, y2 = 200) {
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", x1);
+            line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2);
+            line.setAttribute("y2", y2);
+            line.setAttribute("stroke", "black");
+            line.setAttribute("stroke-width", "2");
+            svg.appendChild(line);
+            
+            const h1 = document.createElement("div");
+            const h2 = document.createElement("div");
+            h1.className = h2.className = "handle";
+            container.appendChild(h1);
+            container.appendChild(h2);
+            
+            const obj = { line, h1, h2 };
+            lines.push(obj);
+            
+            function updateHandles() {
+                h1.style.left = line.getAttribute("x1") + "px";
+                h1.style.top = line.getAttribute("y1") + "px";
+                h2.style.left = line.getAttribute("x2") + "px";
+                h2.style.top = line.getAttribute("y2") + "px";
+            }
+            
+            updateHandles();
+            
+            function dragHandle(handle, xAttr, yAttr) {
+                handle.onmousedown = e => {
+                    e.stopPropagation();
+                    document.onmousemove = ev => {
+                        const x = (ev.clientX - panX) / scale;
+                        const y = (ev.clientY - panY) / scale;
+                        line.setAttribute(xAttr, x);
+                        line.setAttribute(yAttr, y);
+                        updateHandles();
+                    };
+                    document.onmouseup = () => document.onmousemove = null;
+                };
+            }
+            
+            dragHandle(h1, "x1", "y1");
+            dragHandle(h2, "x2", "y2");
+            
+            line.onmousedown = e => {
+                e.stopPropagation();
+                let startX = e.clientX;
+                let startY = e.clientY;
+                document.onmousemove = ev => {
+                    let dx = (ev.clientX - startX) / scale;
+                    let dy = (ev.clientY - startY) / scale;
+                    ["x1", "x2"].forEach(attr => {
+                        line.setAttribute(attr, parseFloat(line.getAttribute(attr)) + dx);
+                    });
+                    ["y1", "y2"].forEach(attr => {
+                        line.setAttribute(attr, parseFloat(line.getAttribute(attr)) + dy);
+                    });
+                    startX = ev.clientX;
+                    startY = ev.clientY;
+                    updateHandles();
+                };
+                document.onmouseup = () => document.onmousemove = null;
+            };
+        }
+        
+        let dragging = false, startX, startY;
+        
+        container.onmousedown = e => {
+            if (e.target.classList.contains("node") || e.target.classList.contains("handle")) return;
+            dragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+        };
+        
+        document.onmousemove = e => {
+            if (dragging) {
+                panX = e.clientX - startX;
+                panY = e.clientY - startY;
+                container.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+            }
+        };
+        
+        document.onmouseup = () => dragging = false;
+        
+        document.onwheel = e => {
+            const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+            scale *= zoom;
+            scale = Math.max(0.3, Math.min(3, scale));
+            container.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+        };
+        
+        document.getElementById("addNode").onclick = () => createNode(200, 200);
+        document.getElementById("addLine").onclick = () => createLine();
+        
+        document.getElementById("save").onclick = () => {
+            const data = {
+                nodes: nodes.map(n => ({ x: n.x, y: n.y, text: n.text })),
+                lines: lines.map(l => ({
+                    x1: l.line.getAttribute("x1"),
+                    y1: l.line.getAttribute("y1"),
+                    x2: l.line.getAttribute("x2"),
+                    y2: l.line.getAttribute("y2")
+                }))
+            };
+            const blob = new Blob([JSON.stringify(data)]);
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "arbre.json";
+            a.click();
+        };
+        
+        document.getElementById("load").onclick = () => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.onchange = e => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const data = JSON.parse(reader.result);
+                    document.querySelectorAll(".node").forEach(n => n.remove());
+                    svg.innerHTML = "";
+                    document.querySelectorAll(".handle").forEach(h => h.remove());
+                    nodes = [];
+                    lines = [];
+                    data.nodes.forEach(n => createNode(n.x, n.y, n.text));
+                    data.lines.forEach(l => createLine(l.x1, l.y1, l.x2, l.y2));
+                };
+                reader.readAsText(e.target.files[0]);
+            };
+            input.click();
+        };
+    </script>
+</body>
+</html>
