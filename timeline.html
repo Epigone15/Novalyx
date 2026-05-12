@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline Ultra</title>
+    <title>Timeline - Novalyx</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -249,7 +249,7 @@
 </head>
 <body>
     <a href="index.html" class="back-button">🏠 Maison</a>
-    <header>📜 Timeline Ultra</header>
+    <header>📜 Timeline - Novalyx</header>
 
     <div class="controls">
         <input id="title" placeholder="Titre">
@@ -273,7 +273,7 @@
     <script>
         let events = [
             {date:"2020-01-01", title:"Début", desc:"Premier événement"},
-            {date:"2025-01-01", title:"Projet", desc:"Ton site"},
+            {date:"2025-01-01", title:"Projet", desc:"Novalyx"},
         ];
 
         let currentEventIndex = -1;
@@ -379,7 +379,7 @@
 
         function exportJSON(){
             const data = JSON.stringify(events, null, 2);
-            download(data, "timeline.json");
+            download(data, "timeline-novalyx.json");
         }
 
         function exportHTML(){
@@ -388,13 +388,13 @@
                 <html>
                 <head><meta charset="UTF-8"><title>Timeline Export</title></head>
                 <body style="font-family:Arial">
-                <h1>Timeline</h1>
+                <h1>Timeline - Novalyx</h1>
                 <ul>
                     ${events.map(e=>`<li><b>${e.date}</b> - ${e.title} : ${e.desc}</li>`).join("")}
                 </ul>
                 </body>
                 </html>`;
-            download(html, "timeline.html");
+            download(html, "timeline-novalyx.html");
         }
 
         function download(content, file){
