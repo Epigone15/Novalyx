@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mindmap </title>
+    <title>Mindmap - Novalyx</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -256,7 +256,7 @@
             });
             
             const link = document.createElement("a");
-            link.download = "mindmap.png";
+            link.download = "mindmap-novalyx.png";
             link.href = exportCanvas.toDataURL("image/png");
             link.click();
         };
@@ -278,7 +278,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "mindmap.json";
+            a.download = "mindmap-novalyx.json";
             a.click();
         };
         
