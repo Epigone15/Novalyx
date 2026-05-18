@@ -97,15 +97,28 @@
             left: -6px;
         }
 
-        /* HORIZONTAL */
+        /* HORIZONTAL TIMELINE FIX */
         .timeline.horizontal {
+            display: flex;
             flex-direction: row;
             overflow-x: auto;
             padding: 40px 20px;
             gap: 0;
             align-items: flex-start;
             min-height: 200px;
-            white-space: nowrap;
+            position: relative;
+        }
+
+        .timeline.horizontal::before {
+            content: '';
+            position: absolute;
+            height: 4px;
+            background: #38bdf8;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            margin-top: -2px;
+            z-index: 0;
         }
 
         .timeline.horizontal::after {
@@ -113,17 +126,13 @@
         }
 
         .timeline.horizontal .event {
-            display: inline-block;
-            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 180px;
             padding: 10px;
             position: relative;
-            text-align: center;
-            vertical-align: top;
-            margin-right: 100px;
-        }
-
-        .timeline.horizontal .event:last-child {
-            margin-right: 0;
+            z-index: 1;
         }
 
         .timeline.horizontal .event::before {
@@ -134,8 +143,8 @@
             background: #38bdf8;
             border-radius: 50%;
             top: -6px;
-            left: 0;
-            margin-left: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .timeline.horizontal .event:not(:last-child)::after {
@@ -144,9 +153,10 @@
             height: 4px;
             background: #38bdf8;
             top: -2px;
-            left: 6px;
-            width: 94px;
+            left: 50%;
+            width: calc(100% - 6px);
             z-index: -1;
+            transform: translateX(50%);
         }
 
         .event-content {
@@ -157,16 +167,16 @@
             transition: 0.2s;
             position: relative;
         }
-
+        
         .event-content:hover {
             background: #334155;
         }
-
+        
         .details {
             margin-top: 5px;
             font-size: 0.9em;
         }
-
+        
         .context-menu {
             position: absolute;
             background: #1e293b;
@@ -177,11 +187,11 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             min-width: 150px;
         }
-
+        
         .context-menu.show {
             display: block;
         }
-
+        
         .context-menu button {
             display: block;
             width: 100%;
@@ -192,16 +202,16 @@
             border: none;
             color: white;
         }
-
+        
         .context-menu button:hover {
             background: #334155;
         }
-
+        
         .editing {
             background: #0f172a;
             border: 1px solid #38bdf8;
         }
-
+        
         .editing input {
             width: 100%;
             margin: 4px 0;
@@ -224,11 +234,7 @@
                 padding: 40px 10px;
             }
             .timeline.horizontal .event {
-                width: 150px;
-                margin-right: 50px;
-            }
-            .timeline.horizontal .event:not(:last-child)::after {
-                width: 44px;
+                min-width: 150px;
             }
         }
 
