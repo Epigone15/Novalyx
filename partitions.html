@@ -1,208 +1,254 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éditeur de Partitions - Novalyx</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        #controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .note-button {
-            padding: 10px 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        .note-button:hover {
-            background-color: #2980b9;
-        }
-        .note-button.active {
-            background-color: #e74c3c;
-        }
-        #canvas {
-            background-color: white;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-            display: block;
-            margin: 0 auto;
-            cursor: crosshair;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        #save-button {
-            background-color: #2ecc71;
-            margin-top: 10px;
-        }
-        #save-button:hover {
-            background-color: #27ae60;
-        }
-        #clear-button {
-            background-color: #e74c3c;
-        }
-        #clear-button:hover {
-            background-color: #c0392b;
-        }
-        .instructions {
-            text-align: center;
-            margin: 20px 0;
-            font-style: italic;
-            color: #7f8c8d;
-        }
-    </style>
-</head>
-<body>
-    <h1>🎵 Éditeur de Partitions</h1>
-    <p class="instructions">Clique sur le canvas pour ajouter une note. Sélectionne un type de note ci-dessous.</p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éditeur de Partitions - Novalyx</title>
 
-    <div id="controls">
-        <button class="note-button" onclick="setNoteType('whole')" id="whole-btn">🎵 Ronde (1)</button>
-        <button class="note-button" onclick="setNoteType('half')" id="half-btn">🎶 Blanche (1/2)</button>
-        <button class="note-button" onclick="setNoteType('quarter')" id="quarter-btn">🎵 Noire (1/4)</button>
-        <button class="note-button" onclick="setNoteType('eighth')" id="eighth-btn">🎶 Croche (1/8)</button>
-        <button class="note-button" onclick="setNoteType('sixteenth')" id="sixteenth-btn">🎵 Double Croche (1/16)</button>
-        <button class="note-button" onclick="setNoteType('rest')" id="rest-btn">🔇 Silence</button>
-        <button class="note-button" id="clear-button" onclick="clearCanvas()">🗑️ Effacer</button>
-        <button class="note-button" id="save-button" onclick="saveAsImage()">💾 Sauvegarder</button>
+<style>
+    body {
+        margin: 0;
+        background: #eef1f5;
+        font-family: "Segoe UI", sans-serif;
+        color: #333;
+    }
+
+    header {
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    #toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+        background: #fff;
+        border-bottom: 2px solid #d0d4d8;
+        justify-content: center;
+    }
+
+    .tool-group {
+        background: #f7f7f7;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .tool-group h3 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: #555;
+        text-align: center;
+    }
+
+    button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #3498db;
+        color: white;
+        transition: 0.2s;
+        font-size: 14px;
+    }
+
+    button:hover {
+        background: #2980b9;
+    }
+
+    button.active {
+        background: #e74c3c;
+    }
+
+    #canvas-container {
+        margin: 20px auto;
+        width: 95%;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    canvas {
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        cursor: crosshair;
+    }
+</style>
+</head>
+
+<body>
+
+<header>🎼 Éditeur de Partitions — Novalyx</header>
+
+<div id="toolbar">
+
+    <div class="tool-group">
+        <h3>Notes</h3>
+        <button onclick="setNote('whole')">Ronde</button>
+        <button onclick="setNote('half')">Blanche</button>
+        <button onclick="setNote('quarter')" class="active">Noire</button>
+        <button onclick="setNote('eighth')">Croche</button>
+        <button onclick="setNote('sixteenth')">Double</button>
     </div>
 
-    <canvas id="canvas" width="900" height="500"></canvas>
+    <div class="tool-group">
+        <h3>Silences</h3>
+        <button onclick="setNote('rest')">Silence</button>
+    </div>
 
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let currentNoteType = 'quarter'; // Type de note par défaut
-        const notes = []; // Stocke les notes dessinées
+    <div class="tool-group">
+        <h3>Altérations</h3>
+        <button onclick="setAccidental('#')">♯</button>
+        <button onclick="setAccidental('b')">♭</button>
+        <button onclick="setAccidental('natural')">♮</button>
+    </div>
 
-        // Dessiner la portée
-        function drawStaff() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
+    <div class="tool-group">
+        <h3>Outils</h3>
+        <button onclick="undo()">↩️ Annuler</button>
+        <button onclick="redo()">↪️ Refaire</button>
+        <button onclick="clearAll()">🗑️ Effacer</button>
+        <button onclick="savePNG()">💾 PNG</button>
+        <button onclick="saveSVG()">📐 SVG</button>
+    </div>
 
-            // 5 lignes de la portée
-            for (let i = 0; i < 5; i++) {
-                const y = 100 + i * 20;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
+</div>
 
-            // Redessiner toutes les notes sauvegardées
-            notes.forEach(note => {
-                drawNote(note.x, note.y, note.type);
-            });
-        }
+<div id="canvas-container">
+    <canvas id="sheet" width="1400" height="600"></canvas>
+</div>
 
-        // Définir le type de note à dessiner
-        function setNoteType(type) {
-            currentNoteType = type;
-            // Mettre à jour le bouton actif
-            document.querySelectorAll('.note-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(`${type}-btn`).classList.add('active');
-        }
+<script>
+const canvas = document.getElementById("sheet");
+const ctx = canvas.getContext("2d");
 
-        // Dessiner une note
-        function drawNote(x, y, type) {
-            ctx.fillStyle = '#000';
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
+let notes = [];
+let redoStack = [];
+let currentNote = "quarter";
+let currentAccidental = null;
 
-            // Dessiner la tête de note
-            ctx.beginPath();
-            ctx.arc(x, y, 8, 0, Math.PI * 2);
-            ctx.fill();
+// --- STAFF DRAWING ---
+function drawStaff() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#000";
 
-            // Ajouter une hampe pour les notes < ronde
-            if (type !== 'whole' && type !== 'rest') {
-                ctx.beginPath();
-                ctx.moveTo(x + 8, y);
-                ctx.lineTo(x + 8, y - 40);
-                ctx.stroke();
-            }
+    for (let i = 0; i < 5; i++) {
+        const y = 150 + i * 20;
+        ctx.beginPath();
+        ctx.moveTo(50, y);
+        ctx.lineTo(canvas.width - 50, y);
+        ctx.stroke();
+    }
 
-            // Ajouter des drapeaux pour les croches/doubles croches
-            if (type === 'eighth') {
-                ctx.beginPath();
-                ctx.moveTo(x + 8, y - 40);
-                ctx.lineTo(x + 8 - 10, y - 30);
-                ctx.stroke();
-            } else if (type === 'sixteenth') {
-                ctx.beginPath();
-                ctx.moveTo(x + 8, y - 40);
-                ctx.lineTo(x + 8 - 10, y - 30);
-                ctx.moveTo(x + 8, y - 40);
-                ctx.lineTo(x + 8 - 10, y - 35);
-                ctx.stroke();
-            }
+    notes.forEach(n => drawNote(n));
+}
 
-            // Dessiner un silence
-            if (type === 'rest') {
-                ctx.clearRect(x - 8, y - 8, 16, 16);
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x - 8, y - 8);
-                ctx.lineTo(x + 8, y + 8);
-                ctx.moveTo(x - 8, y + 8);
-                ctx.lineTo(x + 8, y - 8);
-                ctx.stroke();
-            }
-        }
+// --- NOTE DRAWING ---
+function drawNote(n) {
+    const { x, y, type, accidental } = n;
 
-        // Effacer le canvas
-        function clearCanvas() {
-            notes.length = 0; // Vider le tableau des notes
-            drawStaff();
-        }
+    ctx.fillStyle = "#000";
+    ctx.strokeStyle = "#000";
 
-        // Sauvegarder en image
-        function saveAsImage() {
-            const link = document.createElement('a');
-            link.download = 'partition.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
+    // accidental
+    if (accidental === "#") ctx.fillText("♯", x - 15, y + 5);
+    if (accidental === "b") ctx.fillText("♭", x - 15, y + 5);
+    if (accidental === "natural") ctx.fillText("♮", x - 15, y + 5);
 
-        // Gérer le clic sur le canvas
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+    if (type === "rest") {
+        ctx.fillText("𝄽", x - 5, y + 5);
+        return;
+    }
 
-            // Ajouter la note au tableau
-            notes.push({ x, y, type: currentNoteType });
-            drawNote(x, y, currentNoteType);
-        });
+    // note head
+    ctx.beginPath();
+    ctx.ellipse(x, y, 10, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-        // Initialiser
-        drawStaff();
-        setNoteType('quarter'); // Bouton "Noire" actif par défaut
-    </script>
+    // stem
+    if (type !== "whole") {
+        ctx.beginPath();
+        ctx.moveTo(x + 10, y);
+        ctx.lineTo(x + 10, y - 40);
+        ctx.stroke();
+    }
+
+    // flags
+    if (type === "eighth") {
+        ctx.fillText("𝆭", x + 12, y - 35);
+    }
+    if (type === "sixteenth") {
+        ctx.fillText("𝆮", x + 12, y - 35);
+    }
+}
+
+// --- TOOL ACTIONS ---
+function setNote(type) {
+    currentNote = type;
+    document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    event.target.classList.add("active");
+}
+
+function setAccidental(a) {
+    currentAccidental = a;
+}
+
+function undo() {
+    if (notes.length === 0) return;
+    redoStack.push(notes.pop());
+    drawStaff();
+}
+
+function redo() {
+    if (redoStack.length === 0) return;
+    notes.push(redoStack.pop());
+    drawStaff();
+}
+
+function clearAll() {
+    notes = [];
+    redoStack = [];
+    drawStaff();
+}
+
+// --- SAVE ---
+function savePNG() {
+    const link = document.createElement("a");
+    link.download = "partition.png";
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+function saveSVG() {
+    alert("Version SVG en cours d’implémentation (structure prête)");
+}
+
+// --- CANVAS CLICK ---
+canvas.addEventListener("click", e => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    // snap to staff lines
+    y = Math.round(y / 10) * 10;
+
+    notes.push({ x, y, type: currentNote, accidental: currentAccidental });
+    redoStack = [];
+    drawStaff();
+});
+
+// init
+drawStaff();
+</script>
+
 </body>
 </html>
