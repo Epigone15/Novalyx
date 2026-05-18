@@ -1,254 +1,463 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Éditeur de Partitions - Novalyx</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur de Partitions - Novalyx</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f0f2f5;
+            --card-color: #ffffff;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+        }
 
-<style>
-    body {
-        margin: 0;
-        background: #eef1f5;
-        font-family: "Segoe UI", sans-serif;
-        color: #333;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
 
-    header {
-        background: #2c3e50;
-        color: white;
-        padding: 20px;
-        text-align: center;
-        font-size: 26px;
-        font-weight: bold;
-        letter-spacing: 1px;
-    }
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
 
-    #toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 15px;
-        background: #fff;
-        border-bottom: 2px solid #d0d4d8;
-        justify-content: center;
-    }
+        .subtitle {
+            text-align: center;
+            color: var(--light-text);
+            margin-bottom: 30px;
+        }
 
-    .tool-group {
-        background: #f7f7f7;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
 
-    .tool-group h3 {
-        margin: 0 0 8px 0;
-        font-size: 14px;
-        color: #555;
-        text-align: center;
-    }
+        .note-button, .action-button {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-    button {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        background: #3498db;
-        color: white;
-        transition: 0.2s;
-        font-size: 14px;
-    }
+        .note-button:hover, .action-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
 
-    button:hover {
-        background: #2980b9;
-    }
+        .note-button.active {
+            background-color: #e74c3c;
+        }
 
-    button.active {
-        background: #e74c3c;
-    }
+        #canvas {
+            background-color: white;
+            border: 2px solid #bdc3c7;
+            border-radius: var(--border-radius);
+            display: block;
+            margin: 20px auto;
+            cursor: crosshair;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 1000px;
+            height: 500px;
+        }
 
-    #canvas-container {
-        margin: 20px auto;
-        width: 95%;
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+        .instructions {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 800px;
+            font-style: italic;
+            color: var(--light-text);
+            background-color: var(--card-color);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
 
-    canvas {
-        width: 100%;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        cursor: crosshair;
-    }
-</style>
+        .keyboard {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .piano-key {
+            width: 40px;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.2s;
+        }
+
+        .piano-key:hover {
+            background-color: #ecf0f1;
+        }
+
+        .piano-key.black {
+            width: 30px;
+            height: 60px;
+            background-color: black;
+            color: white;
+            margin: 0 -15px;
+            z-index: 1;
+        }
+
+        .piano-key.black:hover {
+            background-color: #333;
+        }
+
+        .note-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        #measure-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px auto;
+            max-width: 800px;
+        }
+
+        select, input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+        }
+
+        .measure-button {
+            padding: 8px 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .measure-button:hover {
+            background-color: #27ae60;
+        }
+    </style>
 </head>
-
 <body>
+    <h1>🎵 Éditeur de Partitions</h1>
+    <p class="subtitle">Crée, modifie et exporte tes partitions musicales</p>
 
-<header>🎼 Éditeur de Partitions — Novalyx</header>
-
-<div id="toolbar">
-
-    <div class="tool-group">
-        <h3>Notes</h3>
-        <button onclick="setNote('whole')">Ronde</button>
-        <button onclick="setNote('half')">Blanche</button>
-        <button onclick="setNote('quarter')" class="active">Noire</button>
-        <button onclick="setNote('eighth')">Croche</button>
-        <button onclick="setNote('sixteenth')">Double</button>
+    <div class="instructions">
+        <strong>💡 Conseils :</strong> Clique sur le canvas pour ajouter une note. Utilise le clavier ou les boutons pour choisir le type de note.
     </div>
 
-    <div class="tool-group">
-        <h3>Silences</h3>
-        <button onclick="setNote('rest')">Silence</button>
+    <!-- Contrôles des notes -->
+    <div id="controls">
+        <button class="note-button" onclick="setNoteType('whole')" id="whole-btn">🎵 Ronde</button>
+        <button class="note-button" onclick="setNoteType('half')" id="half-btn">🎶 Blanche</button>
+        <button class="note-button" onclick="setNoteType('quarter')" id="quarter-btn">🎵 Noire</button>
+        <button class="note-button" onclick="setNoteType('eighth')" id="eighth-btn">🎶 Croche</button>
+        <button class="note-button" onclick="setNoteType('sixteenth')" id="sixteenth-btn">🎵 Double Croche</button>
+        <button class="note-button" onclick="setNoteType('thirtysecond')" id="thirtysecond-btn">🎵 Triple Croche</button>
+        <button class="note-button" onclick="setNoteType('rest')" id="rest-btn">🔇 Silence</button>
     </div>
 
-    <div class="tool-group">
-        <h3>Altérations</h3>
-        <button onclick="setAccidental('#')">♯</button>
-        <button onclick="setAccidental('b')">♭</button>
-        <button onclick="setAccidental('natural')">♮</button>
+    <!-- Clavier piano -->
+    <div class="keyboard">
+        <div class="piano-key" onclick="setNotePitch('C4')"><div class="note-label">C4</div></div>
+        <div class="piano-key black" onclick="setNotePitch('C#4')"><div class="note-label">C#4</div></div>
+        <div class="piano-key" onclick="setNotePitch('D4')"><div class="note-label">D4</div></div>
+        <div class="piano-key black" onclick="setNotePitch('D#4')"><div class="note-label">D#4</div></div>
+        <div class="piano-key" onclick="setNotePitch('E4')"><div class="note-label">E4</div></div>
+        <div class="piano-key" onclick="setNotePitch('F4')"><div class="note-label">F4</div></div>
+        <div class="piano-key black" onclick="setNotePitch('F#4')"><div class="note-label">F#4</div></div>
+        <div class="piano-key" onclick="setNotePitch('G4')"><div class="note-label">G4</div></div>
+        <div class="piano-key black" onclick="setNotePitch('G#4')"><div class="note-label">G#4</div></div>
+        <div class="piano-key" onclick="setNotePitch('A4')"><div class="note-label">A4</div></div>
+        <div class="piano-key black" onclick="setNotePitch('A#4')"><div class="note-label">A#4</div></div>
+        <div class="piano-key" onclick="setNotePitch('B4')"><div class="note-label">B4</div></div>
+        <div class="piano-key" onclick="setNotePitch('C5')"><div class="note-label">C5</div></div>
     </div>
 
-    <div class="tool-group">
-        <h3>Outils</h3>
-        <button onclick="undo()">↩️ Annuler</button>
-        <button onclick="redo()">↪️ Refaire</button>
-        <button onclick="clearAll()">🗑️ Effacer</button>
-        <button onclick="savePNG()">💾 PNG</button>
-        <button onclick="saveSVG()">📐 SVG</button>
+    <!-- Contrôles de mesure -->
+    <div id="measure-controls">
+        <select id="key-signature" onchange="setKeySignature(this.value)">
+            <option value="C">Armure : Do Maj / La min</option>
+            <option value="G">Armure : Sol Maj / Mi min (1#)</option>
+            <option value="D">Armure : Ré Maj / Si min (2#)</option>
+            <option value="A">Armure : La Maj / Fa# min (3#)</option>
+            <option value="F">Armure : Fa Maj / Ré min (1♭)</option>
+            <option value="Bb">Armure : Sib Maj / Sol min (2♭)</option>
+        </select>
+        <select id="time-signature" onchange="setTimeSignature(this.value)">
+            <option value="4/4">Mesure : 4/4</option>
+            <option value="3/4">Mesure : 3/4</option>
+            <option value="6/8">Mesure : 6/8</option>
+            <option value="2/4">Mesure : 2/4</option>
+        </select>
+        <button class="measure-button" onclick="addMeasure()">Ajouter une mesure</button>
+        <button class="action-button" id="clear-button" onclick="clearCanvas()">🗑️ Effacer</button>
+        <button class="action-button" id="save-button" onclick="saveAsImage()">💾 Sauvegarder</button>
     </div>
 
-</div>
+    <canvas id="canvas" width="1000" height="500"></canvas>
 
-<div id="canvas-container">
-    <canvas id="sheet" width="1400" height="600"></canvas>
-</div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let currentNoteType = 'quarter';
+        let currentNotePitch = 'C4';
+        let notes = [];
+        let keySignature = 'C';
+        let timeSignature = '4/4';
+        let measures = [{ x: 50, width: 200 }]; // Position et largeur des mesures
 
-<script>
-const canvas = document.getElementById("sheet");
-const ctx = canvas.getContext("2d");
+        // Dessiner la portée
+        function drawStaff() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
 
-let notes = [];
-let redoStack = [];
-let currentNote = "quarter";
-let currentAccidental = null;
+            // Dessiner les 5 lignes de la portée
+            for (let i = 0; i < 5; i++) {
+                const y = 150 + i * 20;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
 
-// --- STAFF DRAWING ---
-function drawStaff() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "#000";
+            // Dessiner les mesures
+            measures.forEach(measure => {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(measure.x, 100);
+                ctx.lineTo(measure.x, 250);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(measure.x + measure.width, 100);
+                ctx.lineTo(measure.x + measure.width, 250);
+                ctx.stroke();
+            });
 
-    for (let i = 0; i < 5; i++) {
-        const y = 150 + i * 20;
-        ctx.beginPath();
-        ctx.moveTo(50, y);
-        ctx.lineTo(canvas.width - 50, y);
-        ctx.stroke();
-    }
+            // Dessiner l'armure
+            drawKeySignature();
 
-    notes.forEach(n => drawNote(n));
-}
+            // Dessiner la signature rythmique
+            drawTimeSignature();
 
-// --- NOTE DRAWING ---
-function drawNote(n) {
-    const { x, y, type, accidental } = n;
+            // Redessiner toutes les notes
+            notes.forEach(note => {
+                drawNote(note.x, note.y, note.type, note.pitch);
+            });
+        }
 
-    ctx.fillStyle = "#000";
-    ctx.strokeStyle = "#000";
+        // Dessiner l'armure
+        function drawKeySignature() {
+            const sharpPositions = {
+                'G': [{ line: -1, accidental: '#' }],
+                'D': [{ line: -1, accidental: '#' }, { line: 0, accidental: '#' }],
+                'A': [{ line: -1, accidental: '#' }, { line: 0, accidental: '#' }, { line: 1, accidental: '#' }],
+                'F': [{ line: 1, accidental: '♭' }],
+                'Bb': [{ line: 1, accidental: '♭' }, { line: 2, accidental: '♭' }]
+            };
 
-    // accidental
-    if (accidental === "#") ctx.fillText("♯", x - 15, y + 5);
-    if (accidental === "b") ctx.fillText("♭", x - 15, y + 5);
-    if (accidental === "natural") ctx.fillText("♮", x - 15, y + 5);
+            if (sharpPositions[keySignature]) {
+                sharpPositions[keySignature].forEach(pos => {
+                    const x = 30;
+                    const y = 150 + pos.line * 10;
+                    ctx.font = '20px Arial';
+                    ctx.fillText(pos.accidental, x, y + 5);
+                });
+            }
+        }
 
-    if (type === "rest") {
-        ctx.fillText("𝄽", x - 5, y + 5);
-        return;
-    }
+        // Dessiner la signature rythmique
+        function drawTimeSignature() {
+            ctx.font = '20px Arial';
+            ctx.fillText(timeSignature, 100, 150 + 4 * 20 + 20);
+        }
 
-    // note head
-    ctx.beginPath();
-    ctx.ellipse(x, y, 10, 7, 0, 0, Math.PI * 2);
-    ctx.fill();
+        // Définir le type de note
+        function setNoteType(type) {
+            currentNoteType = type;
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`${type}-btn`).classList.add('active');
+        }
 
-    // stem
-    if (type !== "whole") {
-        ctx.beginPath();
-        ctx.moveTo(x + 10, y);
-        ctx.lineTo(x + 10, y - 40);
-        ctx.stroke();
-    }
+        // Définir la hauteur de la note
+        function setNotePitch(pitch) {
+            currentNotePitch = pitch;
+            document.querySelectorAll('.piano-key').forEach(key => {
+                key.style.backgroundColor = key.classList.contains('black') ? 'black' : 'white';
+            });
+            const activeKey = Array.from(document.querySelectorAll('.piano-key')).find(key => {
+                return key.getAttribute('onclick').includes(pitch);
+            });
+            if (activeKey) {
+                activeKey.style.backgroundColor = activeKey.classList.contains('black') ? '#444' : '#ecf0f1';
+            }
+        }
 
-    // flags
-    if (type === "eighth") {
-        ctx.fillText("𝆭", x + 12, y - 35);
-    }
-    if (type === "sixteenth") {
-        ctx.fillText("𝆮", x + 12, y - 35);
-    }
-}
+        // Définir l'armure
+        function setKeySignature(signature) {
+            keySignature = signature;
+            drawStaff();
+        }
 
-// --- TOOL ACTIONS ---
-function setNote(type) {
-    currentNote = type;
-    document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
-    event.target.classList.add("active");
-}
+        // Définir la signature rythmique
+        function setTimeSignature(signature) {
+            timeSignature = signature;
+            drawStaff();
+        }
 
-function setAccidental(a) {
-    currentAccidental = a;
-}
+        // Ajouter une mesure
+        function addMeasure() {
+            const lastMeasure = measures[measures.length - 1];
+            measures.push({ x: lastMeasure.x + lastMeasure.width, width: 200 });
+            drawStaff();
+        }
 
-function undo() {
-    if (notes.length === 0) return;
-    redoStack.push(notes.pop());
-    drawStaff();
-}
+        // Dessiner une note
+        function drawNote(x, y, type, pitch) {
+            ctx.fillStyle = '#000';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
 
-function redo() {
-    if (redoStack.length === 0) return;
-    notes.push(redoStack.pop());
-    drawStaff();
-}
+            // Positionner la note sur la portée en fonction de la hauteur
+            const notePositions = {
+                'C4': 4,
+                'C#4': 4,
+                'D4': 3,
+                'D#4': 3,
+                'E4': 2,
+                'F4': 2,
+                'F#4': 1,
+                'G4': 1,
+                'G#4': 0,
+                'A4': 0,
+                'A#4': -1,
+                'B4': -1,
+                'C5': -2
+            };
+            const lineOffset = notePositions[pitch] || 0;
+            const noteY = 150 + (4 - lineOffset) * 10;
 
-function clearAll() {
-    notes = [];
-    redoStack = [];
-    drawStaff();
-}
+            // Dessiner la tête de note
+            ctx.beginPath();
+            ctx.arc(x, noteY, 8, 0, Math.PI * 2);
+            ctx.fill();
 
-// --- SAVE ---
-function savePNG() {
-    const link = document.createElement("a");
-    link.download = "partition.png";
-    link.href = canvas.toDataURL();
-    link.click();
-}
+            // Ajouter une hampe pour les notes < ronde
+            if (type !== 'whole' && type !== 'rest') {
+                const stemHeight = type === 'eighth' || type === 'sixteenth' || type === 'thirtysecond' ? 40 : 30;
+                ctx.beginPath();
+                ctx.moveTo(x + 8, noteY);
+                ctx.lineTo(x + 8, noteY - stemHeight);
+                ctx.stroke();
 
-function saveSVG() {
-    alert("Version SVG en cours d’implémentation (structure prête)");
-}
+                // Ajouter des drapeaux pour les croches/doubles croches/triples croches
+                if (type === 'eighth') {
+                    ctx.beginPath();
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 10);
+                    ctx.stroke();
+                } else if (type === 'sixteenth') {
+                    ctx.beginPath();
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 7);
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 14);
+                    ctx.stroke();
+                } else if (type === 'thirtysecond') {
+                    ctx.beginPath();
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 5);
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 10);
+                    ctx.moveTo(x + 8, noteY - stemHeight);
+                    ctx.lineTo(x + 8 - 10, noteY - stemHeight + 15);
+                    ctx.stroke();
+                }
+            }
 
-// --- CANVAS CLICK ---
-canvas.addEventListener("click", e => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
+            // Dessiner un silence
+            if (type === 'rest') {
+                ctx.clearRect(x - 8, noteY - 8, 16, 16);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - 8, noteY - 8);
+                ctx.lineTo(x + 8, noteY + 8);
+                ctx.moveTo(x - 8, noteY + 8);
+                ctx.lineTo(x + 8, noteY - 8);
+                ctx.stroke();
+            }
+        }
 
-    // snap to staff lines
-    y = Math.round(y / 10) * 10;
+        // Effacer le canvas
+        function clearCanvas() {
+            notes = [];
+            measures = [{ x: 50, width: 200 }];
+            drawStaff();
+        }
 
-    notes.push({ x, y, type: currentNote, accidental: currentAccidental });
-    redoStack = [];
-    drawStaff();
-});
+        // Sauvegarder en image
+        function saveAsImage() {
+            const link = document.createElement('a');
+            link.download = 'partition.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
 
-// init
-drawStaff();
-</script>
+        // Gérer le clic sur le canvas
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
+            // Ajouter la note au tableau
+            notes.push({ x, y: 150, type: currentNoteType, pitch: currentNotePitch });
+            drawNote(x, 150, currentNoteType, currentNotePitch);
+        });
+
+        // Initialiser
+        drawStaff();
+        setNoteType('quarter');
+        setNotePitch('C4');
+    </script>
 </body>
 </html>
