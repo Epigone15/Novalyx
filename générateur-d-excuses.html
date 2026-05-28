@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'excuses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #excuse-container {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        #excuse-text {
+            font-size: 20px;
+            margin-bottom: 30px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #generate-button {
+            padding: 12px 24px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #generate-button:hover {
+            background-color: #3367D6;
+        }
+        #home-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #home-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="excuse-container">
+        <div id="excuse-text">Appuie sur le bouton pour générer une excuse !</div>
+        <button id="generate-button">Générer une excuse</button>
+        <button id="home-button">🏠 Accueil</button>
+    </div>
+
+    <script>
+        const excuseText = document.getElementById("excuse-text");
+        const generateButton = document.getElementById("generate-button");
+        const homeButton = document.getElementById("home-button");
+
+        const excuses = [
+            "Désolé, j’ai raté le bus à cause d’un pigeon agressif.",
+            "Mon réveil a crash comme Windows 98.",
+            "J’ai été enlevé par des extraterrestres, mais ils m’ont ramené.",
+            "Mon chat a mangé mes clés de voiture.",
+            "J’ai confondu aujourd’hui avec hier.",
+            "Mon GPS m’a envoyé dans un lac.",
+            "J’ai eu une panne de caféine.",
+            "Mon chien a fait une grève de la promenade.",
+            "J’ai été bloqué dans un ascenseur avec un clown.",
+            "Mon ordinateur a attrapé un virus… et moi aussi.",
+            "J’ai dû sauver un chaton coincé dans un arbre.",
+            "Mon téléphone a décidé de faire une sieste.",
+            "J’ai été téléporté dans une autre dimension.",
+            "J’ai oublié comment marcher.",
+            "Mon frigo a mangé ma motivation."
+        ];
+
+        generateButton.addEventListener("click", () => {
+            const randomIndex = Math.floor(Math.random() * excuses.length);
+            excuseText.textContent = excuses[randomIndex];
+        });
+
+        homeButton.addEventListener("click", () => {
+            window.location.href = "https://epigone15.github.io/Novalyx/index.html";
+        });
+    </script>
+</body>
+</html>
