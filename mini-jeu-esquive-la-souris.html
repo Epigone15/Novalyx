@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Jeu: Esquive la souris</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #button {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.1s;
+        }
+        #button:hover {
+            background-color: #ff6666;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #home-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #home-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Score: 0</div>
+        <button id="button">Esquive-moi !</button>
+        <button id="home-button">🏠 Accueil</button>
+    </div>
+
+    <script>
+        const button = document.getElementById("button");
+        const scoreElement = document.getElementById("score");
+        const homeButton = document.getElementById("home-button");
+        const gameContainer = document.getElementById("game-container");
+
+        let score = 0;
+
+        // Fonction pour déplacer le bouton aléatoirement
+        function moveButton() {
+            const maxX = gameContainer.clientWidth - button.clientWidth;
+            const maxY = gameContainer.clientHeight - button.clientHeight;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            button.style.left = randomX + "px";
+            button.style.top = randomY + "px";
+        }
+
+        // Déplacer le bouton quand la souris passe dessus
+        button.addEventListener("mouseover", () => {
+            moveButton();
+            score++;
+            scoreElement.textContent = `Score: ${score}`;
+        });
+
+        // Rediriger vers l'accueil
+        homeButton.addEventListener("click", () => {
+            window.location.href = "https://epigone15.github.io/Novalyx/index.html";
+        });
+
+        // Initialiser la position du bouton
+        moveButton();
+    </script>
+</body>
+</html>
