@@ -1,3 +1,4 @@
+<!-- Fichier : partitions.html (corrigé) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,6 +35,29 @@
             text-align: center;
             color: var(--light-text);
             margin-bottom: 30px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--card-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .back-button:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
         }
 
         #controls {
@@ -174,6 +198,7 @@
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-button">🏠 Accueil</a>
     <h1>🎵 Éditeur de Partitions</h1>
     <p class="subtitle">Crée, modifie et exporte tes partitions musicales</p>
 
@@ -240,7 +265,7 @@
         let notes = [];
         let keySignature = 'C';
         let timeSignature = '4/4';
-        let measures = [{ x: 50, width: 200 }]; // Position et largeur des mesures
+        let measures = [{ x: 50, width: 200 }];
 
         // Dessiner la portée
         function drawStaff() {
@@ -374,7 +399,7 @@
                 'C5': -2
             };
             const lineOffset = notePositions[pitch] || 0;
-            const noteY = 150 + (4 - lineOffset) * 10;
+            const noteY = y; // Utilise la position Y calculée lors du clic
 
             // Dessiner la tête de note
             ctx.beginPath();
@@ -449,9 +474,24 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // Ajouter la note au tableau
-            notes.push({ x, y: 150, type: currentNoteType, pitch: currentNotePitch });
-            drawNote(x, 150, currentNoteType, currentNotePitch);
+            // Calculer la position Y sur la portée (5 lignes = 100px d'écart)
+            const staffTop = 100; // Position du haut de la portée
+            const staffBottom = 250; // Position du bas de la portée
+            const lineHeight = 20; // Espacement entre les lignes
+
+            // Trouver la ligne la plus proche du clic
+            let closestLine = 0;
+            for (let i = 0; i < 5; i++) {
+                const lineY = staffTop + i * lineHeight;
+                if (Math.abs(y - lineY) < Math.abs(y - (staffTop + closestLine * lineHeight))) {
+                    closestLine = i;
+                }
+            }
+            const noteY = staffTop + closestLine * lineHeight;
+
+            // Ajouter la note
+            notes.push({ x, y: noteY, type: currentNoteType, pitch: currentNotePitch });
+            drawNote(x, noteY, currentNoteType, currentNotePitch);
         });
 
         // Initialiser
