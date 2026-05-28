@@ -331,25 +331,6 @@ No one knows the mission, but morale is high.
 
     </section>
 
-    <!-- MEME -->
-
-    <section class="section">
-
-        <h2>🎉 Meme Generator</h2>
-
-        <p>
-            Clique pour générer un meme aléatoire.
-        </p>
-
-        <button class="meme-button" onclick="generateMeme()">
-            Générer un Meme
-        </button>
-
-        <div id="meme-output" style="margin-top:25px;"></div>
-
-    </section>
-
-</div>
 
 <footer>
 
@@ -367,70 +348,6 @@ No one knows the mission, but morale is high.
 
 </footer>
 
-<script>
-
-const sealImages = [
-
-"https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1200&auto=format&fit=crop",
-
-"https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1200&auto=format&fit=crop",
-
-"https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=1200&auto=format&fit=crop"
-
-];
-
-const memeTexts = [
-
-"Quand ton code marche du premier coup",
-
-"Moi après 3 cafés",
-
-"Le phoque a validé le bug",
-
-"Énergie du lundi matin",
-
-"Quand tu pushes en production sans tester",
-
-"POV: tu vois un phoque rebondir"
-
-];
-
-function generateMeme(){
-
-    const image =
-        sealImages[Math.floor(Math.random()*sealImages.length)];
-
-    const text =
-        memeTexts[Math.floor(Math.random()*memeTexts.length)];
-
-    document.getElementById("meme-output").innerHTML = `
-
-        <div style="
-            background:white;
-            padding:20px;
-            border-radius:20px;
-            box-shadow:0 5px 15px rgba(0,0,0,0.1);
-        ">
-
-            <img src="${image}" alt="meme">
-
-            <p style="
-                margin-top:15px;
-                font-size:1.5rem;
-                color:#ff5f7a;
-                font-weight:bold;
-            ">
-                ${text}
-            </p>
-
-        </div>
-
-    `;
-}
-
-window.onload = generateMeme;
-
-</script>
 
 </body>
 </html>
