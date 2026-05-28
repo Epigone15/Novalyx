@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roast ton site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #roast-container {
+            position: relative;
+            width: 500px;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        #url-input {
+            width: 80%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #roast-button {
+            padding: 12px 24px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #roast-button:hover {
+            background-color: #cc0000;
+        }
+        #roast-text {
+            margin-top: 30px;
+            font-size: 18px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+        }
+        #home-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #home-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="roast-container">
+        <h2>Roast ton site</h2>
+        <input type="text" id="url-input" placeholder="Colle ton URL ici...">
+        <button id="roast-button">Roast !</button>
+        <div id="roast-text">On attend ton URL pour te griller 🔥</div>
+        <button id="home-button">🏠 Accueil</button>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById("url-input");
+        const roastButton = document.getElementById("roast-button");
+        const roastText = document.getElementById("roast-text");
+        const homeButton = document.getElementById("home-button");
+
+        const roasts = [
+            "Ce site ressemble à un PowerPoint de 2007.",
+            "Ton site a plus de bugs qu’un jeu Ubisoft au launch.",
+            "Le design est si mauvais que même Geocities aurait honte.",
+            "Ton site charge plus lentement qu’un escargot sous sédatifs.",
+            "On dirait que ton CSS a été écrit par un pigeon.",
+            "Ce site est si vieux que les dinosaures l’utilisaient.",
+            "Ton site a l’ergonomie d’un clavier AZERTY en QR.",
+            "Même MySpace a un meilleur design.",
+            "Ton site est si moche que mon écran a pleuré.",
+            "On dirait que ton site a été codé en 10 minutes… et ça se voit.",
+            "Ton site a plus de pop-ups qu’un site de streaming illégal.",
+            "Le responsive ? Connais pas.",
+            "Ton site est si lent que j’ai eu le temps de boire un café en attendant.",
+            "On dirait que ton site a été conçu par quelqu’un qui a découvert HTML hier.",
+            "Ton site a l’esthétique d’un meme de 2012.",
+            "Même Internet Explorer bloquerait ce site.",
+            "Ton site est si mal optimisé que mon PC a crash.",
+            "On dirait que ton site a été fait avec FrontPage.",
+            "Ton site a plus de couleurs que clignotent qu’un sapin de Noël.",
+            "Le JavaScript de ton site est plus buggé qu’un jeu Bethesda.",
+            "Ton site est si mal sécurisé que même un bot de 1998 pourrait le pirater."
+        ];
+
+        roastButton.addEventListener("click", () => {
+            const url = urlInput.value.trim();
+            if (url === "") {
+                roastText.textContent = "Mets une URL, sinon je peux pas roaster ! 😤";
+            } else {
+                const randomIndex = Math.floor(Math.random() * roasts.length);
+                roastText.textContent = roasts[randomIndex];
+            }
+        });
+
+        homeButton.addEventListener("click", () => {
+            window.location.href = "https://epigone15.github.io/Novalyx/index.html";
+        });
+    </script>
+</body>
+</html>
