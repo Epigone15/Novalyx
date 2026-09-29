@@ -3,79 +3,1512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bouncing Seals 🦭</title>
+
+<title>🦭 Bouncing Seals — Seal Apocalypse</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Comic Sans MS","Chalkboard SE",cursive;background:linear-gradient(180deg,#eef8ff 0%,#cce7ff 100%);overflow-x:hidden;min-height:100vh}
-.seal{position:fixed;pointer-events:none;animation:float linear infinite;will-change:transform;user-select:none}
-@keyframes float{0%{transform:translateY(110vh)}100%{transform:translateY(-10vh)}}
-header{text-align:center;padding:60px 20px;background:linear-gradient(135deg,#4ecdc4,#45b7d1,#0078ff);color:#fff;box-shadow:0 8px 30px rgba(0,120,255,.25);border-radius:0 0 30px 30px;margin-bottom:30px}
-h1{font-size:clamp(2.2rem,7vw,5rem);text-shadow:3px 3px 0 rgba(0,0,0,.15);letter-spacing:2px}
-.btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:25px}
-button{padding:14px 28px;border:none;border-radius:999px;font-size:1.15rem;cursor:pointer;background:#ff6b6b;color:#fff;transition:.2s;box-shadow:0 4px 15px rgba(255,107,107,.35);font-weight:700}
-button:hover{transform:scale(1.08);background:#ff3b3b}
-.nuclear{background:#111;color:#00ff88;box-shadow:0 4px 15px rgba(0,255,136,.25)}
-.shake{animation:shake .4s}
-@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(10px,-10px)}50%{transform:translate(-10px,10px)}75%{transform:translate(10px,10px)}100%{transform:translate(0,0)}}
-.container{max-width:1200px;margin:auto;padding:0 20px 40px}
-.video-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
-.video-wrapper{position:relative;padding-bottom:56.25%;background:#000;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-.video-wrapper iframe{position:absolute;width:100%;height:100%;border:none}
-.home-btn{position:fixed;top:18px;left:18px;background:rgba(255,255,255,.95);color:#0078ff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.8rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,120,255,.25);transition:.2s;display:flex;align-items:center;justify-content:center;z-index:9999}
-.home-btn:hover{background:#0078ff;color:#fff;transform:scale(1.1)}
-.counter{position:fixed;bottom:18px;right:18px;background:rgba(0,0,0,.75);color:#00ff88;padding:10px 16px;border-radius:999px;font-weight:700;font-size:1rem;z-index:9999;box-shadow:0 4px 15px rgba(0,0,0,.3)}
+/* =========================================================
+   RESET
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --blue: #0078ff;
+    --cyan: #4ecdc4;
+    --ice: #dff6ff;
+    --pink: #ff6b9d;
+    --purple: #8b5cf6;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.9) 0 3px, transparent 4px),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,.7) 0 2px, transparent 3px),
+        linear-gradient(
+            180deg,
+            #eafaff 0%,
+            #bde7ff 45%,
+            #8fd5ff 100%
+        );
+
+    background-size:
+        140px 140px,
+        190px 190px,
+        100% 100%;
+
+    transition: filter .2s;
+}
+
+/* =========================================================
+   OCEAN DECORATION
+========================================================= */
+
+.ocean {
+    position: fixed;
+    inset: auto 0 0;
+    height: 180px;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.wave {
+    position: absolute;
+    width: 200%;
+    height: 120px;
+    left: -50%;
+    bottom: -55px;
+
+    border-radius: 45% 55% 0 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255,255,255,.35) 0 20%,
+            transparent 21%
+        );
+
+    background-size: 130px 45px;
+    animation: waveMove 7s linear infinite;
+}
+
+.wave:nth-child(2) {
+    bottom: -70px;
+    opacity: .55;
+    animation-duration: 11s;
+    animation-direction: reverse;
+}
+
+@keyframes waveMove {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(180px);
+    }
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    position: relative;
+    z-index: 10;
+
+    text-align: center;
+    padding: 55px 20px 45px;
+
+    color: white;
+
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.25), transparent 25%),
+        linear-gradient(
+            135deg,
+            #4ecdc4,
+            #45b7d1,
+            #0078ff,
+            #635bff
+        );
+
+    background-size: 150% 150%;
+    animation: headerGradient 8s ease infinite;
+
+    box-shadow:
+        0 12px 40px rgba(0,100,220,.3),
+        inset 0 -3px rgba(255,255,255,.2);
+
+    border-radius: 0 0 45px 45px;
+}
+
+@keyframes headerGradient {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+h1 {
+    font-size: clamp(2.2rem, 8vw, 5.5rem);
+    letter-spacing: 3px;
+
+    text-shadow:
+        4px 4px 0 rgba(0,0,0,.12),
+        0 0 25px rgba(255,255,255,.35);
+
+    animation: titleBounce 2.2s ease-in-out infinite;
+}
+
+@keyframes titleBounce {
+    0%,100% {
+        transform: translateY(0) rotate(-1deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+}
+
+.subtitle {
+    margin-top: 8px;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    opacity: .9;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+button {
+    position: relative;
+    overflow: hidden;
+
+    padding: 14px 25px;
+    border: none;
+    border-radius: 999px;
+
+    font: inherit;
+    font-size: 1.05rem;
+    font-weight: 900;
+
+    cursor: pointer;
+    color: white;
+
+    background: linear-gradient(135deg, #ff6b6b, #ff3d81);
+
+    box-shadow:
+        0 7px 0 #d83258,
+        0 12px 25px rgba(255,60,120,.25);
+
+    transition:
+        transform .15s,
+        box-shadow .15s;
+}
+
+button:hover {
+    transform: translateY(-4px) scale(1.06);
+    box-shadow:
+        0 10px 0 #d83258,
+        0 18px 35px rgba(255,60,120,.3);
+}
+
+button:active {
+    transform: translateY(4px) scale(.98);
+    box-shadow:
+        0 3px 0 #d83258,
+        0 6px 15px rgba(255,60,120,.2);
+}
+
+button::after {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 200%;
+    top: -50%;
+    left: -60px;
+
+    background: rgba(255,255,255,.4);
+
+    transform: rotate(20deg);
+    transition: left .5s;
+}
+
+button:hover::after {
+    left: 120%;
+}
+
+.nuclear {
+    background: linear-gradient(135deg, #111, #262626);
+    color: #00ff88;
+
+    box-shadow:
+        0 7px 0 #000,
+        0 0 20px rgba(0,255,136,.25);
+}
+
+.nuclear:hover {
+    box-shadow:
+        0 10px 0 #000,
+        0 0 35px rgba(0,255,136,.6);
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.container {
+    position: relative;
+    z-index: 5;
+
+    max-width: 1250px;
+    margin: auto;
+
+    padding: 35px 20px 220px;
+}
+
+.video-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 25px;
+}
+
+.video-wrapper {
+    position: relative;
+
+    aspect-ratio: 16 / 9;
+
+    background: #001522;
+
+    border-radius: 25px;
+
+    overflow: hidden;
+
+    border: 3px solid rgba(255,255,255,.6);
+
+    box-shadow:
+        0 15px 35px rgba(0,80,150,.2),
+        0 0 0 5px rgba(255,255,255,.15);
+
+    transition:
+        transform .3s,
+        box-shadow .3s;
+}
+
+.video-wrapper:hover {
+    transform:
+        translateY(-10px)
+        rotate(-1deg)
+        scale(1.025);
+
+    box-shadow:
+        0 25px 55px rgba(0,80,150,.3),
+        0 0 35px rgba(0,180,255,.25);
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    border: none;
+}
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.home-btn {
+    position: fixed;
+
+    top: 18px;
+    left: 18px;
+
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10000;
+
+    font-size: 1.7rem;
+
+    background: rgba(255,255,255,.92);
+    color: var(--blue);
+
+    border: 2px solid rgba(255,255,255,.7);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 8px 25px rgba(0,80,200,.2);
+
+    transition: .2s;
+}
+
+.home-btn:hover {
+    transform:
+        rotate(-10deg)
+        scale(1.15);
+
+    background: var(--blue);
+    color: white;
+}
+
+/* =========================================================
+   SEAL COUNTER
+========================================================= */
+
+.counter {
+    position: fixed;
+
+    right: 18px;
+    bottom: 18px;
+
+    z-index: 10000;
+
+    padding: 12px 20px;
+
+    border-radius: 999px;
+
+    background: rgba(5,15,30,.82);
+    color: #8affc8;
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    font-size: 1.05rem;
+    font-weight: 900;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.25);
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        transform .15s,
+        background .15s;
+}
+
+.counter.pop {
+    animation: counterPop .3s ease;
+}
+
+@keyframes counterPop {
+    50% {
+        transform: scale(1.25) rotate(-3deg);
+        background: #003d2b;
+    }
+}
+
+/* =========================================================
+   SEALS
+========================================================= */
+
+.seal {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    z-index: 50;
+
+    pointer-events: none;
+    user-select: none;
+
+    line-height: 1;
+
+    filter:
+        drop-shadow(0 8px 6px rgba(0,0,0,.15));
+
+    will-change: transform;
+
+    transform-origin: center center;
+}
+
+/*
+   Petit reflet sur certains phoques
+*/
+.seal::after {
+    content: "";
+    position: absolute;
+
+    width: 25%;
+    height: 12%;
+
+    top: 18%;
+    left: 18%;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.5);
+
+    filter: blur(2px);
+
+    opacity: .7;
+}
+
+/* =========================================================
+   BUBBLES
+========================================================= */
+
+.bubble {
+    position: fixed;
+
+    z-index: 20;
+
+    pointer-events: none;
+
+    width: var(--size);
+    height: var(--size);
+
+    border-radius: 50%;
+
+    border: 2px solid rgba(255,255,255,.75);
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            white 0 8%,
+            rgba(255,255,255,.3) 9% 30%,
+            rgba(255,255,255,.08) 31%
+        );
+
+    animation:
+        bubbleRise var(--duration) ease-out forwards;
+}
+
+@keyframes bubbleRise {
+    from {
+        transform:
+            translateY(0)
+            scale(.3);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    to {
+        transform:
+            translate(
+                var(--drift),
+                -110vh
+            )
+            scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+.particle {
+    position: fixed;
+
+    z-index: 100;
+
+    pointer-events: none;
+
+    font-size: var(--size);
+
+    animation:
+        particleExplode var(--duration) ease-out forwards;
+}
+
+@keyframes particleExplode {
+    from {
+        opacity: 1;
+        transform:
+            translate(0,0)
+            rotate(0)
+            scale(.4);
+    }
+
+    to {
+        opacity: 0;
+
+        transform:
+            translate(var(--x),var(--y))
+            rotate(var(--rotation))
+            scale(1.3);
+    }
+}
+
+/* =========================================================
+   SPECIAL EFFECTS
+========================================================= */
+
+body.shake {
+    animation: screenShake .45s linear;
+}
+
+@keyframes screenShake {
+    0%   { transform: translate(0,0) rotate(0); }
+    20%  { transform: translate(-12px,8px) rotate(-.5deg); }
+    40%  { transform: translate(10px,-10px) rotate(.6deg); }
+    60%  { transform: translate(-8px,-5px) rotate(-.4deg); }
+    80%  { transform: translate(9px,7px) rotate(.4deg); }
+    100% { transform: translate(0,0) rotate(0); }
+}
+
+body.nuclear-mode {
+    animation:
+        nuclearFlash .8s ease-in-out infinite alternate;
+}
+
+@keyframes nuclearFlash {
+    from {
+        filter: saturate(1);
+    }
+
+    to {
+        filter:
+            saturate(1.5)
+            hue-rotate(8deg);
+    }
+}
+
+.flash {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    pointer-events: none;
+
+    background: white;
+
+    animation: flash .5s ease-out forwards;
+}
+
+@keyframes flash {
+    from { opacity: .9; }
+    to   { opacity: 0; }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    header {
+        padding-top: 85px;
+        border-radius: 0 0 30px 30px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .btn-row {
+        gap: 9px;
+    }
+
+    button {
+        padding: 12px 17px;
+        font-size: .95rem;
+    }
+
+    .home-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+    .counter {
+        right: 10px;
+        bottom: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+}
 </style>
 </head>
+
 <body>
-<a href="index.html" class="home-btn" title="Accueil">🏠</a>
+
+<!-- =======================================================
+     HOME
+======================================================= -->
+
+<a href="index.html"
+   class="home-btn"
+   title="Accueil">
+    🏠
+</a>
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
 <header>
-<h1>🦭 BOUNCING SEALS 🦭</h1>
-<div class="btn-row">
-<button onclick="spawnMass()">MORE SEALS 🦭</button>
-<button class="nuclear" onclick="nuclearSeal()">☢️ NUCLEAR</button>
-<button onclick="clearSeals()">🧹 CLEAR</button>
-</div>
+
+    <h1>🦭 BOUNCING SEALS 🦭</h1>
+
+    <div class="subtitle">
+        Attention. Ils sont beaucoup trop nombreux.
+    </div>
+
+    <div class="btn-row">
+
+        <button onclick="spawnMass()">
+            🦭 MORE SEALS
+        </button>
+
+        <button onclick="sealParty()">
+            🎉 SEAL PARTY
+        </button>
+
+        <button class="nuclear" onclick="nuclearSeal()">
+            ☢️ NUCLEAR
+        </button>
+
+        <button onclick="clearSeals()">
+            🧹 CLEAR
+        </button>
+
+    </div>
+
 </header>
+
+<!-- =======================================================
+     CONTENT
+======================================================= -->
+
 <div class="container">
-<div class="video-container">
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/A4MU5BXPGcw" allowfullscreen></iframe></div>
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/VlTo9Z94XQ0" allowfullscreen></iframe></div>
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/-SjPVVeNdKY" allowfullscreen></iframe></div>
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/UmW5d0RBxBc" allowfullscreen></iframe></div>
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/j8Z9eGz8vWk" allowfullscreen></iframe></div>
-<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/1uQ6zKzW7j0" allowfullscreen></iframe></div>
+
+    <div class="video-container">
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/A4MU5BXPGcw"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/VlTo9Z94XQ0"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/-SjPVVeNdKY"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/UmW5d0RBxBc"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/j8Z9eGz8vWk"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="video-wrapper">
+            <iframe
+                src="https://www.youtube.com/embed/1uQ6zKzW7j0"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+    </div>
+
 </div>
+
+<!-- =======================================================
+     OCEAN
+======================================================= -->
+
+<div class="ocean">
+    <div class="wave"></div>
+    <div class="wave"></div>
 </div>
-<div class="counter" id="sealCount">🦭 0</div>
+
+<!-- =======================================================
+     COUNTER
+======================================================= -->
+
+<div class="counter" id="sealCount">
+    🦭 0
+</div>
+
 <script>
-let sealCount=0;
-const counterEl=document.getElementById("sealCount");
-function updateCounter(){counterEl.textContent="🦭 "+sealCount}
-function createSeal(){
-    let seal=document.createElement("div");
-    seal.className="seal";
-    seal.innerHTML="🦭";
-    seal.style.left=Math.random()*100+"vw";
-    seal.style.fontSize=(1+Math.random()*2.5)+"rem";
-    let duration=4+Math.random()*12;
-    seal.style.animationDuration=duration+"s";
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let sealCount = 0;
+
+const counterEl =
+    document.getElementById("sealCount");
+
+const seals = new Set();
+
+let nuclear = false;
+
+
+/* =========================================================
+   COUNTER
+========================================================= */
+
+function updateCounter() {
+
+    counterEl.textContent =
+        `🦭 ${sealCount}`;
+
+    counterEl.classList.remove("pop");
+
+    void counterEl.offsetWidth;
+
+    counterEl.classList.add("pop");
+}
+
+
+/* =========================================================
+   RANDOM HELPERS
+========================================================= */
+
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function randomInt(min, max) {
+    return Math.floor(random(min, max + 1));
+}
+
+
+/* =========================================================
+   CREATE BUBBLES
+========================================================= */
+
+function createBubble() {
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className = "bubble";
+
+    const size =
+        random(5, 28);
+
+    bubble.style.setProperty(
+        "--size",
+        size + "px"
+    );
+
+    bubble.style.left =
+        random(0, 100) + "vw";
+
+    bubble.style.top =
+        random(80, 105) + "vh";
+
+    bubble.style.setProperty(
+        "--duration",
+        random(5, 11) + "s"
+    );
+
+    bubble.style.setProperty(
+        "--drift",
+        random(-150, 150) + "px"
+    );
+
+    document.body.appendChild(bubble);
+
+    setTimeout(
+        () => bubble.remove(),
+        12000
+    );
+}
+
+
+/* =========================================================
+   PARTICLE EXPLOSION
+========================================================= */
+
+function particles(
+    x,
+    y,
+    amount = 15,
+    emojis = ["💦","💙","✨","🫧"]
+) {
+
+    for (let i = 0; i < amount; i++) {
+
+        const p =
+            document.createElement("div");
+
+        p.className = "particle";
+
+        p.textContent =
+            emojis[
+                randomInt(0, emojis.length - 1)
+            ];
+
+        p.style.left = x + "px";
+        p.style.top = y + "px";
+
+        p.style.setProperty(
+            "--size",
+            random(12, 28) + "px"
+        );
+
+        p.style.setProperty(
+            "--x",
+            random(-180, 180) + "px"
+        );
+
+        p.style.setProperty(
+            "--y",
+            random(-180, 180) + "px"
+        );
+
+        p.style.setProperty(
+            "--rotation",
+            random(-720, 720) + "deg"
+        );
+
+        p.style.setProperty(
+            "--duration",
+            random(.6, 1.5) + "s"
+        );
+
+        document.body.appendChild(p);
+
+        setTimeout(
+            () => p.remove(),
+            1800
+        );
+    }
+}
+
+
+/* =========================================================
+   SEAL CREATION
+========================================================= */
+
+function createSeal(options = {}) {
+
+    const seal =
+        document.createElement("div");
+
+    seal.className = "seal";
+
+    seal.textContent = "🦭";
+
+    /* -----------------------------------------------------
+       Size
+    ----------------------------------------------------- */
+
+    const size =
+        options.size ??
+        random(1.3, 4.2);
+
+    seal.style.fontSize =
+        size + "rem";
+
+    /* -----------------------------------------------------
+       Starting position
+    ----------------------------------------------------- */
+
+    let x =
+        options.x ??
+        random(0, window.innerWidth);
+
+    let y =
+        options.y ??
+        window.innerHeight + 80;
+
+    /* -----------------------------------------------------
+       Physics
+    ----------------------------------------------------- */
+
+    let vx =
+        options.vx ??
+        random(-4.5, 4.5);
+
+    let vy =
+        options.vy ??
+        random(-17, -8);
+
+    const gravity =
+        options.gravity ??
+        random(.22, .42);
+
+    const bounce =
+        options.bounce ??
+        random(.78, .94);
+
+    let rotation =
+        random(-20, 20);
+
+    let rotationSpeed =
+        random(-7, 7);
+
+    /* -----------------------------------------------------
+       Visual variation
+    ----------------------------------------------------- */
+
+    seal.style.filter =
+        `hue-rotate(${random(-8,8)}deg)
+         drop-shadow(0 8px 6px rgba(0,0,0,.18))`;
+
     document.body.appendChild(seal);
+
+    seals.add(seal);
+
     sealCount++;
     updateCounter();
-    let x=0,speed=(Math.random()-0.5)*2.5;
-    function move(){x+=speed;seal.style.transform=`translate(${x}px,0)`;requestAnimationFrame(move)}
-    move();
-    setTimeout(()=>{seal.remove();sealCount--;updateCounter()},duration*1000+500);
+
+    /* -----------------------------------------------------
+       Animation
+    ----------------------------------------------------- */
+
+    let alive = true;
+    let lastTime = performance.now();
+
+    function animate(time) {
+
+        if (!alive || !seal.isConnected)
+            return;
+
+        const dt =
+            Math.min(
+                (time - lastTime) / 16.67,
+                2
+            );
+
+        lastTime = time;
+
+        /* Gravity */
+
+        vy += gravity * dt;
+
+        x += vx * dt;
+        y += vy * dt;
+
+        rotation +=
+            rotationSpeed * dt;
+
+        /* -------------------------------------------------
+           WALL BOUNCES
+        ------------------------------------------------- */
+
+        const width =
+            seal.getBoundingClientRect().width;
+
+        if (x < -width) {
+            x = window.innerWidth;
+        }
+
+        if (x > window.innerWidth) {
+            x = -width;
+        }
+
+        /* -------------------------------------------------
+           FLOOR BOUNCE
+        ------------------------------------------------- */
+
+        const floor =
+            window.innerHeight - 80;
+
+        if (y > floor) {
+
+            y = floor;
+
+            vy *= -bounce;
+
+            vx *= .98;
+
+            rotationSpeed =
+                rotationSpeed * .95 +
+                random(-1,1);
+
+            /* Squish */
+
+            seal.animate(
+                [
+                    {
+                        transform:
+                            `translate3d(${x}px,${y}px,0)
+                             rotate(${rotation}deg)
+                             scale(1.35,.65)`
+                    },
+                    {
+                        transform:
+                            `translate3d(${x}px,${y - 12}px,0)
+                             rotate(${rotation}deg)
+                             scale(.9,1.1)`
+                    }
+                ],
+                {
+                    duration: 180,
+                    easing: "ease-out"
+                }
+            );
+
+            /* Tiny splash */
+
+            if (Math.random() < .45) {
+
+                particles(
+                    x,
+                    y,
+                    randomInt(2,5),
+                    ["💦","🫧"]
+                );
+            }
+        }
+
+        /* -------------------------------------------------
+           WOBBLE
+        ------------------------------------------------- */
+
+        const stretch =
+            1 +
+            Math.min(
+                Math.abs(vy) / 45,
+                .22
+            );
+
+        const squash =
+            1 / stretch;
+
+        seal.style.transform =
+            `translate3d(${x}px,${y}px,0)
+             rotate(${rotation}deg)
+             scale(${squash},${stretch})`;
+
+        requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+
+    /* -----------------------------------------------------
+       AUTO REMOVE
+    ----------------------------------------------------- */
+
+    const lifetime =
+        options.lifetime ??
+        random(12000, 30000);
+
+    setTimeout(() => {
+
+        alive = false;
+
+        if (seal.isConnected)
+            seal.remove();
+
+        seals.delete(seal);
+
+        sealCount =
+            Math.max(0, sealCount - 1);
+
+        updateCounter();
+
+    }, lifetime);
+
+    /* -----------------------------------------------------
+       Clickless random bubble trail
+    ----------------------------------------------------- */
+
+    if (Math.random() < .35) {
+
+        const interval =
+            setInterval(() => {
+
+                if (!alive) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                createBubble();
+
+            }, random(700, 1500));
+    }
 }
-for(let i=0;i<40;i++)createSeal();
-function spawnMass(){for(let i=0;i<250;i++)setTimeout(createSeal,i*3)}
-function nuclearSeal(){
-    document.body.classList.add("shake");
-    setTimeout(()=>document.body.classList.remove("shake"),400);
-    for(let i=0;i<1200;i++)setTimeout(createSeal,i*2);
-    setTimeout(()=>alert("☢️ TROP DE PHOQUES MEC ☢️"),1500);
+
+
+/* =========================================================
+   NORMAL SEAL STORM
+========================================================= */
+
+function spawnMass() {
+
+    const amount = 80;
+
+    for (let i = 0; i < amount; i++) {
+
+        setTimeout(() => {
+
+            createSeal({
+                x: random(0, window.innerWidth),
+                y: random(
+                    -window.innerHeight,
+                    window.innerHeight
+                ),
+                vx: random(-6,6),
+                vy: random(-16,-5),
+                size: random(1.2,4)
+            });
+
+        }, i * 15);
+    }
+
+    particles(
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        30,
+        ["🦭","💙","✨"]
+    );
 }
-function clearSeals(){document.querySelectorAll(".seal").forEach(s=>s.remove());sealCount=0;updateCounter()}
+
+
+/* =========================================================
+   SEAL PARTY
+========================================================= */
+
+function sealParty() {
+
+    const centerX =
+        window.innerWidth / 2;
+
+    const centerY =
+        window.innerHeight / 2;
+
+    for (let i = 0; i < 180; i++) {
+
+        setTimeout(() => {
+
+            const angle =
+                random(0, Math.PI * 2);
+
+            const speed =
+                random(7, 20);
+
+            createSeal({
+
+                x: centerX,
+                y: centerY,
+
+                vx:
+                    Math.cos(angle) * speed,
+
+                vy:
+                    Math.sin(angle) * speed - 10,
+
+                size:
+                    random(1.3, 3.8),
+
+                bounce:
+                    random(.8,.95),
+
+                lifetime:
+                    random(15000,25000)
+            });
+
+        }, i * 8);
+    }
+
+    particles(
+        centerX,
+        centerY,
+        60,
+        ["🦭","💖","✨","💦","🫧"]
+    );
+}
+
+
+/* =========================================================
+   NUCLEAR SEAL
+========================================================= */
+
+function nuclearSeal() {
+
+    nuclear = true;
+
+    document.body.classList.add(
+        "nuclear-mode",
+        "shake"
+    );
+
+    /* Flash */
+
+    const flash =
+        document.createElement("div");
+
+    flash.className = "flash";
+
+    document.body.appendChild(flash);
+
+    setTimeout(
+        () => flash.remove(),
+        600
+    );
+
+    /* Massive central explosion */
+
+    particles(
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        150,
+        [
+            "🦭",
+            "☢️",
+            "💥",
+            "💦",
+            "✨",
+            "🫧"
+        ]
+    );
+
+    /* Thousands of seals */
+
+    for (let i = 0; i < 600; i++) {
+
+        setTimeout(() => {
+
+            const angle =
+                random(0, Math.PI * 2);
+
+            const speed =
+                random(5, 30);
+
+            createSeal({
+
+                x:
+                    window.innerWidth / 2,
+
+                y:
+                    window.innerHeight / 2,
+
+                vx:
+                    Math.cos(angle) * speed,
+
+                vy:
+                    Math.sin(angle) * speed - 12,
+
+                gravity:
+                    random(.15,.32),
+
+                bounce:
+                    random(.82,.97),
+
+                size:
+                    random(1,5),
+
+                lifetime:
+                    random(15000,35000)
+            });
+
+        }, i * 4);
+    }
+
+    /* Nuclear bubbles */
+
+    for (let i = 0; i < 150; i++) {
+
+        setTimeout(
+            createBubble,
+            i * 15
+        );
+    }
+
+    setTimeout(() => {
+
+        document.body.classList.remove(
+            "shake"
+        );
+
+    }, 700);
+
+    setTimeout(() => {
+
+        nuclear = false;
+
+        document.body.classList.remove(
+            "nuclear-mode"
+        );
+
+    }, 10000);
+}
+
+
+/* =========================================================
+   CLEAR EVERYTHING
+========================================================= */
+
+function clearSeals() {
+
+    document
+        .querySelectorAll(".seal")
+        .forEach(seal => seal.remove());
+
+    document
+        .querySelectorAll(".particle,.bubble")
+        .forEach(el => el.remove());
+
+    seals.clear();
+
+    sealCount = 0;
+
+    updateCounter();
+
+    particles(
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+        25,
+        ["💨","🫧"]
+    );
+}
+
+
+/* =========================================================
+   INITIAL SEALS
+========================================================= */
+
+for (let i = 0; i < 35; i++) {
+
+    setTimeout(() => {
+
+        createSeal({
+
+            x:
+                random(
+                    0,
+                    window.innerWidth
+                ),
+
+            y:
+                random(
+                    0,
+                    window.innerHeight
+                ),
+
+            vx:
+                random(-4,4),
+
+            vy:
+                random(-15,0),
+
+            size:
+                random(1.4,3.8),
+
+            lifetime:
+                random(18000,30000)
+
+        });
+
+    }, i * 60);
+}
+
+
+/* =========================================================
+   BACKGROUND BUBBLES
+========================================================= */
+
+for (let i = 0; i < 20; i++) {
+
+    setTimeout(
+        createBubble,
+        i * 300
+    );
+}
+
+
+/* =========================================================
+   RANDOM MINI EVENTS
+========================================================= */
+
+setInterval(() => {
+
+    if (nuclear)
+        return;
+
+    if (Math.random() < .25) {
+
+        const x =
+            random(50, window.innerWidth - 50);
+
+        const y =
+            random(100, window.innerHeight - 100);
+
+        particles(
+            x,
+            y,
+            randomInt(4,10),
+            ["🫧","💦","✨"]
+        );
+    }
+
+}, 1500);
+
+
+/* =========================================================
+   CLICK ANYWHERE = BABY SEAL
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.closest("button") ||
+            event.target.closest(".home-btn") ||
+            event.target.closest("iframe")
+        ) {
+            return;
+        }
+
+        createSeal({
+
+            x: event.clientX,
+
+            y: event.clientY,
+
+            vx: random(-10,10),
+
+            vy: random(-18,-10),
+
+            size: random(1.5,3.5),
+
+            lifetime: 12000
+        });
+
+        particles(
+            event.clientX,
+            event.clientY,
+            8,
+            ["💦","🫧","💙"]
+        );
+    }
+);
+
 </script>
+
 </body>
 </html>
