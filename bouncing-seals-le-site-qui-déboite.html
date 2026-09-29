@@ -3,223 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Bouncing Seals 🦭</title>
-<link rel="stylesheet" href="styles.css">
-
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    font-family:"Comic Sans MS", cursive;
-    background:#eef8ff;
-    overflow-x:hidden;
-    position:relative;
-}
-
-/* 🦭 BACKGROUND */
-
-.seal{
-    position:fixed;
-    pointer-events:none;
-    animation:float linear infinite;
-}
-
-@keyframes float{
-    0%{transform:translateY(110vh);}
-    100%{transform:translateY(-10vh);}
-}
-
-/* HEADER */
-
-header{
-    text-align:center;
-    padding:40px 20px;
-    background:linear-gradient(45deg,#4ecdc4,#45b7d1);
-    color:white;
-}
-
-h1{
-    font-size:clamp(2rem,6vw,4rem);
-}
-
-/* BUTTONS */
-
-button{
-    margin-top:20px;
-    margin-right:10px;
-    padding:15px 25px;
-    border:none;
-    border-radius:999px;
-    font-size:1.2rem;
-    cursor:pointer;
-    background:#ff6b6b;
-    color:white;
-    transition:0.2s;
-}
-
-button:hover{
-    transform:scale(1.1);
-    background:#ff3b3b;
-}
-
-.nuclear{
-    background:black;
-    color:#00ff88;
-}
-
-/* SHAKE */
-
-.shake{
-    animation:shake 0.4s;
-}
-
-@keyframes shake{
-    0%{transform:translate(0,0);}
-    25%{transform:translate(10px,-10px);}
-    50%{transform:translate(-10px,10px);}
-    75%{transform:translate(10px,10px);}
-    100%{transform:translate(0,0);}
-}
-
-/* VIDEOS */
-
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-}
-
-.video-container{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-    gap:20px;
-}
-
-.video-wrapper{
-    position:relative;
-    padding-bottom:56.25%;
-}
-
-.video-wrapper iframe{
-    position:absolute;
-    width:100%;
-    height:100%;
-    border:none;
-    border-radius:15px;
-}
-
-/* Bouton maison */
-.home-button {
-    background: rgba(255, 255, 255, 0.9);
-    color: #0078ff;
-    border: none;
-}
-
-.home-button:hover {
-    background: #0078ff;
-    color: white;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Comic Sans MS","Chalkboard SE",cursive;background:linear-gradient(180deg,#eef8ff 0%,#cce7ff 100%);overflow-x:hidden;min-height:100vh}
+.seal{position:fixed;pointer-events:none;animation:float linear infinite;will-change:transform;user-select:none}
+@keyframes float{0%{transform:translateY(110vh)}100%{transform:translateY(-10vh)}}
+header{text-align:center;padding:60px 20px;background:linear-gradient(135deg,#4ecdc4,#45b7d1,#0078ff);color:#fff;box-shadow:0 8px 30px rgba(0,120,255,.25);border-radius:0 0 30px 30px;margin-bottom:30px}
+h1{font-size:clamp(2.2rem,7vw,5rem);text-shadow:3px 3px 0 rgba(0,0,0,.15);letter-spacing:2px}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:25px}
+button{padding:14px 28px;border:none;border-radius:999px;font-size:1.15rem;cursor:pointer;background:#ff6b6b;color:#fff;transition:.2s;box-shadow:0 4px 15px rgba(255,107,107,.35);font-weight:700}
+button:hover{transform:scale(1.08);background:#ff3b3b}
+.nuclear{background:#111;color:#00ff88;box-shadow:0 4px 15px rgba(0,255,136,.25)}
+.shake{animation:shake .4s}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(10px,-10px)}50%{transform:translate(-10px,10px)}75%{transform:translate(10px,10px)}100%{transform:translate(0,0)}}
+.container{max-width:1200px;margin:auto;padding:0 20px 40px}
+.video-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.video-wrapper{position:relative;padding-bottom:56.25%;background:#000;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.video-wrapper iframe{position:absolute;width:100%;height:100%;border:none}
+.home-btn{position:fixed;top:18px;left:18px;background:rgba(255,255,255,.95);color:#0078ff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.8rem;cursor:pointer;box-shadow:0 6px 20px rgba(0,120,255,.25);transition:.2s;display:flex;align-items:center;justify-content:center;z-index:9999}
+.home-btn:hover{background:#0078ff;color:#fff;transform:scale(1.1)}
+.counter{position:fixed;bottom:18px;right:18px;background:rgba(0,0,0,.75);color:#00ff88;padding:10px 16px;border-radius:999px;font-weight:700;font-size:1rem;z-index:9999;box-shadow:0 4px 15px rgba(0,0,0,.3)}
 </style>
 </head>
-
 <body>
-<a href="index.html" class="home-button">🏠</a>
-
+<a href="index.html" class="home-btn" title="Accueil">🏠</a>
 <header>
-    <h1>🦭 BOUNCING SEALS 🦭</h1>
-    <button onclick="spawnMass()">MORE SEALS 🦭🐥</button>
-    <button class="nuclear" onclick="nuclearSeal()">☢️ NUCLEAR SEAL</button>
+<h1>🦭 BOUNCING SEALS 🦭</h1>
+<div class="btn-row">
+<button onclick="spawnMass()">MORE SEALS 🦭</button>
+<button class="nuclear" onclick="nuclearSeal()">☢️ NUCLEAR</button>
+<button onclick="clearSeals()">🧹 CLEAR</button>
+</div>
 </header>
-
 <div class="container">
-
 <div class="video-container">
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/A4MU5BXPGcw" allowfullscreen></iframe>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/A4MU5BXPGcw" allowfullscreen></iframe></div>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/VlTo9Z94XQ0" allowfullscreen></iframe></div>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/-SjPVVeNdKY" allowfullscreen></iframe></div>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/UmW5d0RBxBc" allowfullscreen></iframe></div>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/j8Z9eGz8vWk" allowfullscreen></iframe></div>
+<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/1uQ6zKzW7j0" allowfullscreen></iframe></div>
 </div>
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/VlTo9Z94XQ0" allowfullscreen></iframe>
 </div>
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/-SjPVVeNdKY" allowfullscreen></iframe>
-</div>
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/UmW5d0RBxBc" allowfullscreen></iframe>
-</div>
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/j8Z9eGz8vWk" allowfullscreen></iframe>
-</div>
-
-<div class="video-wrapper">
-<iframe src="https://www.youtube.com/embed/1uQ6zKzW7j0" allowfullscreen></iframe>
-</div>
-
-</div>
-
-</div>
-
+<div class="counter" id="sealCount">🦭 0</div>
 <script>
-
+let sealCount=0;
+const counterEl=document.getElementById("sealCount");
+function updateCounter(){counterEl.textContent="🦭 "+sealCount}
 function createSeal(){
     let seal=document.createElement("div");
     seal.className="seal";
     seal.innerHTML="🦭";
-
     seal.style.left=Math.random()*100+"vw";
-    seal.style.fontSize=(1+Math.random()*2)+"rem";
-
-    let duration=5+Math.random()*10;
+    seal.style.fontSize=(1+Math.random()*2.5)+"rem";
+    let duration=4+Math.random()*12;
     seal.style.animationDuration=duration+"s";
-
     document.body.appendChild(seal);
-
-    let x=0;
-    let speed=(Math.random()-0.5)*2;
-
-    function move(){
-        x+=speed;
-        seal.style.transform=`translate(${x}px,0)`;
-        requestAnimationFrame(move);
-    }
+    sealCount++;
+    updateCounter();
+    let x=0,speed=(Math.random()-0.5)*2.5;
+    function move(){x+=speed;seal.style.transform=`translate(${x}px,0)`;requestAnimationFrame(move)}
     move();
+    setTimeout(()=>{seal.remove();sealCount--;updateCounter()},duration*1000+500);
 }
-
-// spawn initial
-for(let i=0;i<30;i++){
-    createSeal();
-}
-
-// bouton normal
-function spawnMass(){
-    for(let i=0;i<200;i++){
-        createSeal();
-    }
-}
-
-// ☢️ nucléaire
+for(let i=0;i<40;i++)createSeal();
+function spawnMass(){for(let i=0;i<250;i++)setTimeout(createSeal,i*3)}
 function nuclearSeal(){
-
     document.body.classList.add("shake");
     setTimeout(()=>document.body.classList.remove("shake"),400);
-
-    for(let i=0;i<1000;i++){
-        setTimeout(createSeal, i*2);
-    }
-
-    alert("☢️ trop de phoques mec ☢️");
+    for(let i=0;i<1200;i++)setTimeout(createSeal,i*2);
+    setTimeout(()=>alert("☢️ TROP DE PHOQUES MEC ☢️"),1500);
 }
-
+function clearSeals(){document.querySelectorAll(".seal").forEach(s=>s.remove());sealCount=0;updateCounter()}
 </script>
-
 </body>
 </html>
