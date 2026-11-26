@@ -1,689 +1,1353 @@
-<!-- Fichier : geometry.html (corrigé) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Géométrie Interactive - Novalyx</title>
+    <title>NOVALYX GEOMETRY STUDIO</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --bg-color: #050b14;
+            --panel-bg: rgba(10, 20, 35, 0.75);
+            --panel-border: rgba(0, 242, 254, 0.2);
+            --primary: #00f2fe;
+            --primary-glow: rgba(0, 242, 254, 0.4);
+            --secondary: #4facfe;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --danger: #f43f5e;
+            --danger-glow: rgba(244, 63, 94, 0.4);
+            --active-bg: rgba(0, 242, 254, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-            overflow: auto; /* Permet le scroll */
-            min-height: 100vh;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
         }
 
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #1e293b;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-
-        .back-button:hover {
-            background: #38bdf8;
-            transform: translateY(-2px);
-        }
-
-        #container {
-            display: flex;
-            gap: 20px;
-        }
-        
-        #canvas-container {
-            flex: 1;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            margin-bottom: 20px; /* Évite que le contenu soit collé en bas */
+            display: flex;
+            flex-direction: column;
         }
-        
-        #toolbar {
-            width: 250px;
-            background: white;
-            padding: 15px;
+
+        /* Top Header */
+        header {
+            height: 60px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--primary-glow);
         }
-        
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #050b14;
+        }
+
+        h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--active-bg);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .btn.danger:hover {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: var(--danger);
+            box-shadow: 0 0 10px var(--danger-glow);
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
+            background: #030712;
             cursor: crosshair;
         }
-        
-        button {
-            width: 100%;
+
+        /* Floating Toolbars */
+        .toolbar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
             padding: 8px;
-            margin: 5px 0;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 5;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .tool-btn {
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
         }
-        
-        button:hover {
-            background: #45a049;
+
+        .tool-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
         }
-        
-        button.active {
-            background: #2E7D32;
+
+        .tool-btn:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.03);
         }
-        
-        select, input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
+
+        .tool-btn.active {
+            color: var(--primary);
+            background: var(--active-bg);
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .tool-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 55px;
+            background: #0f172a;
+            color: #fff;
+            padding: 4px 8px;
+            font-size: 0.75rem;
             border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10;
         }
-        
-        .color-picker {
-            width: 100%;
-            height: 40px;
-            padding: 0;
+
+        .tool-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Side Panel (Inspector / Objects) */
+        .sidebar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            bottom: 20px;
+            width: 320px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--panel-border);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
             border: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        
-        #object-list {
-            margin-top: 15px;
-            max-height: 200px;
+
+        .tab.active {
+            color: var(--primary);
+            background: var(--active-bg);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .sidebar-content {
+            flex: 1;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 5px;
+            padding: 15px;
         }
-        
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .object-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .object-item {
-            padding: 5px;
-            border-bottom: 1px solid #eee;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        
+
         .object-item:hover {
-            background: #f5f5f5;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
         }
-        
-        #coordinates {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
+
+        .object-item.selected {
+            border-color: var(--primary);
+            background: var(--active-bg);
         }
-        
-        #status {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #333;
-            font-weight: bold;
+
+        .object-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .object-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: var(--primary);
+        }
+
+        .icon-btn.danger:hover {
+            color: var(--danger);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Settings controls */
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .control-label span {
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            background: rgba(255,255,255,0.1);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+        }
+
+        /* Status / Real-time Bar */
+        .statusbar {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 20px;
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .statusbar span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Custom Color Picker input */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid var(--panel-border);
+            border-radius: 50%;
+        }
+
+        /* Hidden file input */
+        #fileInput {
+            display: none;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                top: auto;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                height: 45vh;
+                border-radius: 16px 16px 0 0;
+                transform: translateY(calc(100% - 50px));
+            }
+            .sidebar.expanded {
+                transform: translateY(0);
+            }
+            .toolbar {
+                top: 10px;
+                left: 10px;
+                flex-direction: row;
+            }
+            .tool-btn::after {
+                display: none;
+            }
+            .statusbar {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-button">🏠 Accueil</a>
-    <h1>Géométrie Interactive</h1>
-    <div id="container">
-        <div id="toolbar">
-            <h3>Outils</h3>
-            <button id="tool-point" class="active">Point</button>
-            <button id="tool-segment">Segment</button>
-            <button id="tool-circle">Cercle</button>
-            <button id="tool-select">Sélectionner</button>
-            <button id="tool-delete">Supprimer</button>
-            <button id="clear-all">Tout effacer</button>
 
-            <h3>Options</h3>
-            <label>
-                <input type="checkbox" id="show-grid" checked> Grille
-            </label>
-            <label>
-                <input type="checkbox" id="show-axes" checked> Axes
-            </label>
-            <label>
-                <input type="checkbox" id="snap-to-grid"> Accroche à la grille
-            </label>
-
-            <h3>Couleur</h3>
-            <input type="color" id="object-color" class="color-picker" value="#ff0000">
-
-            <h3>Objets</h3>
-            <div id="object-list"></div>
-
-            <h3>Statut</h3>
-            <div id="status">Prêt</div>
-            <div id="coordinates">X: 0, Y: 0</div>
-
-            <h3>Actions</h3>
-            <button id="undo">Annuler</button>
-            <button id="redo">Refaire</button>
-            <button id="export">Exporter (JSON)</button>
-            <button id="import">Importer (JSON)</button>
-            <input type="file" id="import-file" style="display: none;" accept=".json">
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <h1>NOVALYX GEOMETRY STUDIO</h1>
         </div>
-        <div id="canvas-container">
-            <canvas id="canvas"></canvas>
+        <div class="header-actions">
+            <button class="btn" id="btnUndo" title="Annuler">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+                <span style="display:none; @media(min-width:600px){display:inline;}">Annuler</span>
+            </button>
+            <button class="btn" id="btnRedo" title="Refaire">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+            </button>
+            <button class="btn" id="btnExport">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exporter
+            </button>
+            <button class="btn" id="btnImport">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Importer
+            </button>
+            <input type="file" id="fileInput" accept=".json">
+            <button class="btn danger" id="btnClear">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </button>
         </div>
+    </header>
+
+    <div class="workspace">
+        <!-- Floating Tools Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn active" data-tool="select" data-tooltip="Sélectionner / Déplacer">
+                <svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="point" data-tooltip="Créer un Point">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="segment" data-tooltip="Créer un Segment">
+                <svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </button>
+            <button class="tool-btn" data-tool="circle" data-tooltip="Créer un Cercle (Centre-Rayon)">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+        </div>
+
+        <!-- Canvas -->
+        <canvas id="geometryCanvas"></canvas>
+
+        <!-- Real-time Status Bar -->
+        <div class="statusbar">
+            <div>X: <span id="coordX">0.00</span></div>
+            <div>Y: <span id="coordY">0.00</span></div>
+            <div>Mode: <span id="modeStatus">Sélection</span></div>
+        </div>
+
+        <!-- Sidebar Inspector & Objects -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header" id="sidebarToggleHandle">
+                <span>Gestionnaire & Propriétés</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="sidebar-tabs">
+                <button class="tab active" data-tab="objects">Objets</button>
+                <button class="tab" data-tab="settings">Paramètres</button>
+            </div>
+            <div class="sidebar-content">
+                <!-- Objects Tab Content -->
+                <div id="tab-objects" class="tab-pane">
+                    <div class="section-title">Liste des objets</div>
+                    <div class="object-list" id="objectList">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <!-- Settings Tab Content -->
+                <div id="tab-settings" class="tab-pane" style="display: none;">
+                    <div class="section-title">Affichage</div>
+                    <div class="toggle-switch">
+                        <span>Afficher la grille</span>
+                        <input type="checkbox" id="toggleGrid" checked>
+                    </div>
+                    <div class="toggle-switch">
+                        <span>Afficher les axes</span>
+                        <input type="checkbox" id="toggleAxes" checked>
+                    </div>
+                    <div class="toggle-switch">
+                        <span>Accrochage grille</span>
+                        <input type="checkbox" id="toggleSnap" checked>
+                    </div>
+                    <div class="toggle-switch">
+                        <span>Afficher les mesures</span>
+                        <input type="checkbox" id="toggleMeasurements" checked>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 20px;">
+                        <div class="control-label">Taille de grille <span id="gridSizeVal">40px</span></div>
+                        <input type="range" id="gridSizeRange" min="20" max="100" value="40" step="5">
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <script>
-        // ========== CONFIG ==========
-        const CANVAS_WIDTH = 800;
-        const CANVAS_HEIGHT = 600;
-        const GRID_SIZE = 20;
-        const SNAP_TOLERANCE = 10;
+        // --- Core Application State & Architecture ---
+        const canvas = document.getElementById('geometryCanvas');
+        const ctx = canvas.getContext('2d');
 
-        // ========== STATE ==========
-        let canvas, ctx;
-        let objects = [];
-        let selectedObjects = [];
-        let currentTool = 'point';
-        let isDragging = false;
-        let dragObject = null;
-        let dragOffset = { x: 0, y: 0 };
+        let width = 0;
+        let height = 0;
+
+        // Viewport transformation (Pan & Zoom)
+        let panX = 0;
+        let panY = 0;
+        let scale = 1; // 1 unit in pixels = scale * baseScale (we use scale as zoom multiplier)
+
+        let currentTool = 'select'; // 'select', 'point', 'segment', 'circle'
+        let currentAccentColor = '#00f2fe';
+
+        // Settings
+        const settings = {
+            grid: true,
+            axes: true,
+            snap: true,
+            measurements: true,
+            gridSize: 40
+        };
+
+        // Geometric Entities Storage
+        let points = []; // { id, name, x, y, color }
+        let segments = []; // { id, p1Id, p2Id, color }
+        let circles = []; // { id, centerId, radiusPointId, color }
+
+        // Interaction state
         let history = [];
         let historyIndex = -1;
-        let showGrid = true;
-        let showAxes = true;
-        let snapToGrid = false;
-        let objectColor = '#ff0000';
-        let tempPoint = null;
-        let tempSegment = null;
-        let tempCircle = null;
 
-        // ========== INIT ==========
-        function init() {
-            canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d');
-            canvas.width = CANVAS_WIDTH;
-            canvas.height = CANVAS_HEIGHT;
+        let selectedObject = null; // { type: 'point'|'segment'|'circle', id }
+        let hoverObject = null;
+        let isDragging = false;
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
 
-            // Bind events
-            canvas.addEventListener('mousedown', onMouseDown);
-            canvas.addEventListener('mousemove', onMouseMove);
-            canvas.addEventListener('mouseup', onMouseUp);
-            canvas.addEventListener('mouseleave', onMouseLeave);
+        // Creation temporary states
+        let creationTemp = null; // Used for segment start point, circle center, etc.
 
-            // Toolbar
-            document.getElementById('tool-point').addEventListener('click', () => setTool('point'));
-            document.getElementById('tool-segment').addEventListener('click', () => setTool('segment'));
-            document.getElementById('tool-circle').addEventListener('click', () => setTool('circle'));
-            document.getElementById('tool-select').addEventListener('click', () => setTool('select'));
-            document.getElementById('tool-delete').addEventListener('click', () => setTool('delete'));
-            document.getElementById('clear-all').addEventListener('click', clearAll);
-            document.getElementById('show-grid').addEventListener('change', (e) => { showGrid = e.target.checked; draw(); });
-            document.getElementById('show-axes').addEventListener('change', (e) => { showAxes = e.target.checked; draw(); });
-            document.getElementById('snap-to-grid').addEventListener('change', (e) => { snapToGrid = e.target.checked; });
-            document.getElementById('object-color').addEventListener('input', (e) => { objectColor = e.target.value; });
-            document.getElementById('undo').addEventListener('click', undo);
-            document.getElementById('redo').addEventListener('click', redo);
-            document.getElementById('export').addEventListener('click', exportData);
-            document.getElementById('import').addEventListener('click', () => document.getElementById('import-file').click());
-            document.getElementById('import-file').addEventListener('change', importData);
-
-            // Initial draw
-            draw();
-            updateObjectList();
+        // Point naming generator (A, B, C... Z, AA, AB...)
+        let pointNameCounter = 0;
+        function getNextPointName() {
+            let n = pointNameCounter++;
+            let name = "";
+            while (n >= 0) {
+                name = String.fromCharCode(65 + (n % 26)) + name;
+                n = Math.floor(n / 26) - 1;
+            }
+            return name;
         }
 
-        // ========== TOOLS ==========
-        function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('#toolbar button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`tool-${tool}`).classList.add('active');
-            setStatus(`Outil: ${tool}`);
-            tempPoint = null;
-            tempSegment = null;
+        // --- Initialization & Resizing ---
+        function resizeCanvas() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
             draw();
         }
 
-        // ========== MOUSE EVENTS ==========
-        function onMouseDown(e) {
-            const pos = getMousePos(e);
-            const snappedPos = snapToGrid ? snap(pos) : pos;
+        window.addEventListener('resize', resizeCanvas);
 
-            if (currentTool === 'point') {
-                addPoint(snappedPos.x, snappedPos.y);
-                saveToHistory();
-            }
-            else if (currentTool === 'segment') {
-                if (!tempPoint) {
-                    tempPoint = snappedPos;
-                } else {
-                    const start = tempPoint;
-                    const end = snappedPos;
-                    addSegment(start.x, start.y, end.x, end.y);
-                    tempPoint = null;
-                    saveToHistory();
-                }
-            }
-            else if (currentTool === 'circle') {
-                if (!tempPoint) {
-                    tempPoint = snappedPos;
-                } else {
-                    const center = tempPoint;
-                    const radius = Math.sqrt(Math.pow(snappedPos.x - center.x, 2) + Math.pow(snappedPos.y - center.y, 2));
-                    addCircle(center.x, center.y, radius);
-                    tempPoint = null;
-                    saveToHistory();
-                }
-            }
-            else if (currentTool === 'select') {
-                const obj = getObjectAt(pos.x, pos.y);
-                if (obj) {
-                    isDragging = true;
-                    dragObject = obj;
-                    dragOffset = { x: pos.x - obj.x, y: pos.y - obj.y };
-                    selectedObjects = [obj];
-                } else {
-                    selectedObjects = [];
-                }
-                updateObjectList();
-            }
-            else if (currentTool === 'delete') {
-                const obj = getObjectAt(pos.x, pos.y);
-                if (obj) {
-                    removeObject(obj);
-                    saveToHistory();
-                }
-            }
-
-            draw();
+        // Center origin initially
+        function initView() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            panX = width / 2;
+            panY = height / 2;
         }
 
-        function onMouseMove(e) {
-            const pos = getMousePos(e);
-            const snappedPos = snapToGrid ? snap(pos) : pos;
-
-            document.getElementById('coordinates').textContent = `X: ${Math.round(snappedPos.x)}, Y: ${Math.round(snappedPos.y)}`;
-
-            if (isDragging && dragObject) {
-                dragObject.x = snappedPos.x - dragOffset.x;
-                dragObject.y = snappedPos.y - dragOffset.y;
-                draw();
-            }
-
-            if (currentTool === 'segment' && tempPoint) {
-                tempSegment = { start: tempPoint, end: snappedPos };
-                draw();
-            }
-            else if (currentTool === 'circle' && tempPoint) {
-                tempCircle = {
-                    center: tempPoint,
-                    radius: Math.sqrt(Math.pow(snappedPos.x - tempPoint.x, 2) + Math.pow(snappedPos.y - tempPoint.y, 2))
-                };
-                draw();
-            }
-        }
-
-        function onMouseUp() {
-            isDragging = false;
-            dragObject = null;
-            tempSegment = null;
-            tempCircle = null;
-            draw();
-        }
-
-        function onMouseLeave() {
-            isDragging = false;
-            dragObject = null;
-        }
-
-        // ========== DRAWING ==========
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            if (showGrid) {
-                drawGrid();
-            }
-
-            if (showAxes) {
-                drawAxes();
-            }
-
-            objects.forEach(obj => {
-                if (obj.type === 'point') {
-                    drawPoint(obj);
-                } else if (obj.type === 'segment') {
-                    drawSegment(obj);
-                } else if (obj.type === 'circle') {
-                    drawCircle(obj);
-                }
-            });
-
-            if (tempSegment) {
-                ctx.strokeStyle = '#999';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.moveTo(tempSegment.start.x, tempSegment.start.y);
-                ctx.lineTo(tempSegment.end.x, tempSegment.end.y);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
-            if (tempCircle) {
-                ctx.strokeStyle = '#999';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.arc(tempCircle.center.x, tempCircle.center.y, tempCircle.radius, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
-            selectedObjects.forEach(obj => {
-                if (obj.type === 'point') {
-                    ctx.fillStyle = 'yellow';
-                    ctx.beginPath();
-                    ctx.arc(obj.x, obj.y, 6, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-        }
-
-        function drawGrid() {
-            ctx.strokeStyle = '#eee';
-            ctx.lineWidth = 1;
-
-            for (let x = 0; x <= canvas.width; x += GRID_SIZE) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-
-            for (let y = 0; y <= canvas.height; y += GRID_SIZE) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-        }
-
-        function drawAxes() {
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.stroke();
-        }
-
-        function drawPoint(point) {
-            ctx.fillStyle = point.color || objectColor;
-            ctx.beginPath();
-            ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (point.label) {
-                ctx.fillStyle = '#000';
-                ctx.font = '12px Arial';
-                ctx.fillText(point.label, point.x + 8, point.y - 8);
-            }
-        }
-
-        function drawSegment(segment) {
-            ctx.strokeStyle = segment.color || objectColor;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(segment.start.x, segment.start.y);
-            ctx.lineTo(segment.end.x, segment.end.y);
-            ctx.stroke();
-        }
-
-        function drawCircle(circle) {
-            ctx.strokeStyle = circle.color || objectColor;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(circle.center.x, circle.center.y, circle.radius, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        // ========== OBJECT MANAGEMENT ==========
-        function addPoint(x, y) {
-            const label = String.fromCharCode(65 + objects.filter(o => o.type === 'point').length);
-            const point = { type: 'point', x, y, label, color: objectColor };
-            objects.push(point);
-            selectedObjects = [point];
-            updateObjectList();
-            setStatus(`Point ${label} ajouté (${Math.round(x)}, ${Math.round(y)})`);
-        }
-
-        function addSegment(x1, y1, x2, y2) {
-            const segment = { type: 'segment', start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, color: objectColor };
-            objects.push(segment);
-            selectedObjects = [segment];
-            updateObjectList();
-            setStatus(`Segment ajouté de (${Math.round(x1)}, ${Math.round(y1)}) à (${Math.round(x2)}, ${Math.round(y2)})`);
-        }
-
-        function addCircle(x, y, radius) {
-            const circle = { type: 'circle', center: { x, y }, radius, color: objectColor };
-            objects.push(circle);
-            selectedObjects = [circle];
-            updateObjectList();
-            setStatus(`Cercle ajouté (centre: ${Math.round(x)}, ${Math.round(y)}, rayon: ${radius.toFixed(1)})`);
-        }
-
-        function removeObject(obj) {
-            const index = objects.indexOf(obj);
-            if (index !== -1) {
-                objects.splice(index, 1);
-                selectedObjects = [];
-                updateObjectList();
-                setStatus(`Objet supprimé`);
-            }
-        }
-
-        function getObjectAt(x, y) {
-            for (let i = objects.length - 1; i >= 0; i--) {
-                const obj = objects[i];
-                if (obj.type === 'point') {
-                    const dx = x - obj.x;
-                    const dy = y - obj.y;
-                    if (Math.sqrt(dx * dx + dy * dy) <= 10) {
-                        return obj;
-                    }
-                }
-            }
-
-            for (let i = objects.length - 1; i >= 0; i--) {
-                const obj = objects[i];
-                if (obj.type === 'segment') {
-                    if (pointOnSegment(x, y, obj.start, obj.end)) {
-                        return obj;
-                    }
-                }
-            }
-
-            for (let i = objects.length - 1; i >= 0; i--) {
-                const obj = objects[i];
-                if (obj.type === 'circle') {
-                    const dx = x - obj.center.x;
-                    const dy = y - obj.center.y;
-                    if (Math.abs(Math.sqrt(dx * dx + dy * dy) - obj.radius) <= 5) {
-                        return obj;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        function pointOnSegment(px, py, p1, p2) {
-            const l2 = Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2);
-            if (l2 === 0) return false;
-
-            let t = ((px - p1.x) * (p2.x - p1.x) + (py - p1.y) * (p2.y - p1.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
-
-            const projection = {
-                x: p1.x + t * (p2.x - p1.x),
-                y: p1.y + t * (p2.y - p1.y)
-            };
-
-            const dx = px - projection.x;
-            const dy = py - projection.y;
-            return Math.sqrt(dx * dx + dy * dy) <= 5;
-        }
-
-        function clearAll() {
-            objects = [];
-            selectedObjects = [];
-            tempPoint = null;
-            tempSegment = null;
-            tempCircle = null;
-            saveToHistory();
-            updateObjectList();
-            setStatus('Tout effacé');
-            draw();
-        }
-
-        // ========== UTILITIES ==========
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
+        // --- Coordinate Systems Conversions ---
+        function screenToWorld(sx, sy) {
             return {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
+                x: (sx - panX) / (settings.gridSize * scale),
+                y: -(sy - panY) / (settings.gridSize * scale) // Invert Y for mathematical coordinates
             };
         }
 
-        function snap(pos) {
+        function worldToScreen(wx, wy) {
             return {
-                x: Math.round(pos.x / GRID_SIZE) * GRID_SIZE,
-                y: Math.round(pos.y / GRID_SIZE) * GRID_SIZE
+                x: wx * settings.gridSize * scale + panX,
+                y: -wy * settings.gridSize * scale + panY
             };
         }
 
-        function setStatus(msg) {
-            document.getElementById('status').textContent = msg;
+        function snapToGridCoords(wx, wy) {
+            if (!settings.snap) return { x: wx, y: wy };
+            const step = 0.5; // Snap to half units or grid subdivisions
+            return {
+                x: Math.round(wx / step) * step,
+                y: Math.round(wy / step) * step
+            };
         }
 
-        function updateObjectList() {
-            const list = document.getElementById('object-list');
-            list.innerHTML = '';
-
-            objects.forEach((obj, index) => {
-                const item = document.createElement('div');
-                item.className = 'object-item';
-                item.textContent = getObjectDescription(obj);
-                item.addEventListener('click', () => {
-                    selectedObjects = [obj];
-                    draw();
-                });
-                list.appendChild(item);
-            });
-        }
-
-        function getObjectDescription(obj) {
-            if (obj.type === 'point') {
-                return `Point ${obj.label} (${Math.round(obj.x)}, ${Math.round(obj.y)})`;
-            } else if (obj.type === 'segment') {
-                return `Segment (${Math.round(obj.start.x)}, ${Math.round(obj.start.y)}) → (${Math.round(obj.end.x)}, ${Math.round(obj.end.y)})`;
-            } else if (obj.type === 'circle') {
-                return `Cercle (${Math.round(obj.center.x)}, ${Math.round(obj.center.y)}), r=${obj.radius.toFixed(1)}`;
-            }
-            return 'Objet';
-        }
-
-        // ========== HISTORY ==========
-        function saveToHistory() {
+        // --- History / Undo-Redo System ---
+        function saveState() {
+            const state = {
+                points: JSON.parse(JSON.stringify(points)),
+                segments: JSON.parse(JSON.stringify(segments)),
+                circles: JSON.parse(JSON.stringify(circles)),
+                pointNameCounter
+            };
+            // Remove future history if we were back in time
             history = history.slice(0, historyIndex + 1);
-            history.push(JSON.parse(JSON.stringify(objects)));
+            history.push(state);
             historyIndex++;
-            setStatus(`Action enregistrée (${historyIndex})`);
+            updateUndoRedoButtons();
+            updateObjectList();
         }
 
         function undo() {
             if (historyIndex > 0) {
                 historyIndex--;
-                objects = JSON.parse(JSON.stringify(history[historyIndex]));
-                selectedObjects = [];
-                tempPoint = null;
-                tempSegment = null;
-                tempCircle = null;
-                updateObjectList();
-                draw();
-                setStatus(`Annulation (${historyIndex} actions restantes)`);
+                restoreState(history[historyIndex]);
             }
         }
 
         function redo() {
             if (historyIndex < history.length - 1) {
                 historyIndex++;
-                objects = JSON.parse(JSON.stringify(history[historyIndex]));
-                selectedObjects = [];
-                tempPoint = null;
-                tempSegment = null;
-                tempCircle = null;
-                updateObjectList();
-                draw();
-                setStatus(`Rétablissement (${historyIndex} actions)`);
+                restoreState(history[historyIndex]);
             }
         }
 
-        // ========== EXPORT/IMPORT ==========
-        function exportData() {
-            const data = JSON.stringify(objects, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
+        function restoreState(state) {
+            points = JSON.parse(JSON.stringify(state.points));
+            segments = JSON.parse(JSON.stringify(state.segments));
+            circles = JSON.parse(JSON.stringify(state.circles));
+            pointNameCounter = state.pointNameCounter;
+            selectedObject = null;
+            creationTemp = null;
+            updateUndoRedoButtons();
+            updateObjectList();
+            draw();
+        }
+
+        function updateUndoRedoButtons() {
+            document.getElementById('btnUndo').style.opacity = historyIndex > 0 ? '1' : '0.4';
+            document.getElementById('btnRedo').style.opacity = historyIndex < history.length - 1 ? '1' : '0.4';
+        }
+
+        // --- Geometric Calculations & Helpers ---
+        function getPoint(id) {
+            return points.find(p => p.id === id);
+        }
+
+        function distance(p1, p2) {
+            return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        }
+
+        // Hit testing for objects
+        function hitTestPoint(wx, wy, threshold = 0.3) {
+            for (let i = points.length - 1; i >= 0; i--) {
+                const p = points[i];
+                if (Math.hypot(p.x - wx, p.y - wy) <= threshold) {
+                    return p;
+                }
+            }
+            return null;
+        }
+
+        function hitTestSegment(wx, wy, threshold = 0.2) {
+            for (let seg of segments) {
+                const p1 = getPoint(seg.p1Id);
+                const p2 = getPoint(seg.p2Id);
+                if (!p1 || !p2) continue;
+
+                // Distance from point to line segment
+                const l2 = Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2);
+                if (l2 === 0) continue;
+                let t =((wx - p1.x) * (p2.x - p1.x) + (wy - p1.y) * (p2.y - p1.y)) / l2;
+                t = Math.max(0, Math.min(1, t));
+                const projX = p1.x + t * (p2.x - p1.x);
+                const projY = p1.y + t * (p2.y - p1.y);
+                if (Math.hypot(wx - projX, wy - projY) <= threshold) {
+                    return seg;
+                }
+            }
+            return null;
+        }
+
+        function hitTestCircle(wx, wy, threshold = 0.2) {
+            for (let circ of circles) {
+                const center = getPoint(circ.centerId);
+                const rPoint = getPoint(circ.radiusPointId);
+                if (!center || !rPoint) continue;
+                const r = distance(center, rPoint);
+                const d = Math.hypot(wx - center.x, wy - center.y);
+                if (Math.abs(d - r) <= threshold) {
+                    return circ;
+                }
+            }
+            return null;
+        }
+
+        // --- Rendering Engine ---
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Draw Grid
+            if (settings.grid) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+                ctx.lineWidth = 1;
+                const step = settings.gridSize * scale;
+
+                const startX = panX % step;
+                const startY = panY % step;
+
+                ctx.beginPath();
+                for (let x = startX; x < width; x += step) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                }
+                for (let y = startY; y < height; y += step) {
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                }
+                ctx.stroke();
+            }
+
+            // 2. Draw Axes
+            if (settings.axes) {
+                ctx.strokeStyle = 'rgba(0, 242, 254, 0.15)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                // X Axis
+                ctx.moveTo(0, panY);
+                ctx.lineTo(width, panY);
+                // Y Axis
+                ctx.moveTo(panX, 0);
+                ctx.lineTo(panX, height);
+                ctx.stroke();
+            }
+
+            // 3. Draw Segments
+            for (let seg of segments) {
+                const p1 = getPoint(seg.p1Id);
+                const p2 = getPoint(seg.p2Id);
+                if (!p1 || !p2) continue;
+
+                const s1 = worldToScreen(p1.x, p1.y);
+                const s2 = worldToScreen(p2.x, p2.y);
+
+                ctx.strokeStyle = seg.color || currentAccentColor;
+                ctx.lineWidth = (selectedObject && selectedObject.type === 'segment' && selectedObject.id === seg.id) ? 3 : 2;
+                ctx.beginPath();
+                ctx.moveTo(s1.x, s1.y);
+                ctx.lineTo(s2.x, s2.y);
+                ctx.stroke();
+
+                // Measurements
+                if (settings.measurements) {
+                    const len = distance(p1, p2);
+                    const midX = (s1.x + s2.x) / 2;
+                    const midY = (s1.y + s2.y) / 2;
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '11px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${len.toFixed(2)}`, midX, midY - 8);
+                }
+            }
+
+            // 4. Draw Circles
+            for (let circ of circles) {
+                const center = getPoint(circ.centerId);
+                const rPoint = getPoint(circ.radiusPointId);
+                if (!center || !rPoint) continue;
+
+                const sc = worldToScreen(center.x, center.y);
+                const r = distance(center, rPoint) * settings.gridSize * scale;
+
+                ctx.strokeStyle = circ.color || currentAccentColor;
+                ctx.lineWidth = (selectedObject && selectedObject.type === 'circle' && selectedObject.id === circ.id) ? 3 : 2;
+                ctx.beginPath();
+                ctx.arc(sc.x, sc.y, r, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Measurements (Radius & Diameter)
+                if (settings.measurements) {
+                    const radiusVal = distance(center, rPoint);
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '11px sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`r = ${radiusVal.toFixed(2)}`, sc.x + 10, sc.y - 10);
+                }
+            }
+
+            // 5. Draw Points
+            for (let p of points) {
+                const sp = worldToScreen(p.x, p.y);
+                const isSelected = selectedObject && selectedObject.type === 'point' && selectedObject.id === p.id;
+                const isHover = hoverObject && hoverObject.id === p.id;
+
+                ctx.fillStyle = p.color || (isSelected ? '#fff' : currentAccentColor);
+                ctx.beginPath();
+                ctx.arc(sp.x, sp.y, isSelected || isHover ? 6 : 4.5, 0, 2 * Math.PI);
+                ctx.fill();
+
+                if (isSelected) {
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+
+                // Point Label & Coordinates
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${p.name}`, sp.x + 10, sp.y - 10);
+
+                if (settings.measurements) {
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText(`(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`, sp.x + 10, sp.y + 4);
+                }
+            }
+
+            // 6. Draw Creation Previews
+            if (creationTemp) {
+                if (currentTool === 'segment' && creationTemp.pointId) {
+                    const p1 = getPoint(creationTemp.pointId);
+                    if (p1) {
+                        const s1 = worldToScreen(p1.x, p1.y);
+                        ctx.strokeStyle = currentAccentColor;
+                        ctx.setLineDash([4, 4]);
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(s1.x, s1.y);
+                        ctx.lineTo(creationTemp.currentScreenX, creationTemp.currentScreenY);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                } else if (currentTool === 'circle' && creationTemp.centerId) {
+                    const center = getPoint(creationTemp.centerId);
+                    if (center) {
+                        const sc = worldToScreen(center.x, center.y);
+                        const curWorld = screenToWorld(creationTemp.currentScreenX, creationTemp.currentScreenY);
+                        const r = distance(center, curWorld) * settings.gridSize * scale;
+
+                        ctx.strokeStyle = currentAccentColor;
+                        ctx.setLineDash([4, 4]);
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.arc(sc.x, sc.y, r, 0, 2 * Math.PI);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                }
+            }
+        }
+
+        // --- Interaction Handlers (Mouse & Touch) ---
+        let isPanning = false;
+        let panStart = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', e => handlePointerDown(e.clientX, e.clientY, e.button === 2 || e.shiftKey));
+        canvas.addEventListener('mousemove', e => handlePointerMove(e.clientX, e.clientY));
+        canvas.addEventListener('mouseup', e => handlePointerUp());
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Touch support
+        canvas.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) {
+                handlePointerDown(e.touches[0].clientX, e.touches[0].clientY, false);
+            }
+        });
+        canvas.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) {
+                handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        });
+        canvas.addEventListener('touchend', e => handlePointerUp());
+
+        // Zoom with wheel
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            const zoomFactor = 1.1;
+            const oldScale = scale;
+            if (e.deltaY < 0) {
+                scale *= zoomFactor;
+            } else {
+                scale /= zoomFactor;
+            }
+            scale = Math.max(0.2, Math.min(10, scale));
+
+            // Zoom towards mouse pointer
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            panX = mx - (mx - panX) * (scale / oldScale);
+            panY = my - (my - panY) * (scale / oldScale);
+
+            draw();
+        }, { passive: false });
+
+        function handlePointerDown(clientX, clientY, isPanAction) {
+            const rect = canvas.getBoundingClientRect();
+            const sx = clientX - rect.left;
+            const sy = clientY - rect.top;
+            const world = screenToWorld(sx, sy);
+            const snapped = snapToGridCoords(world.x, world.y);
+
+            document.getElementById('coordX').textContent = snapped.x.toFixed(2);
+            document.getElementById('coordY').textContent = snapped.y.toFixed(2);
+
+            if (isPanAction) {
+                isPanning = true;
+                panStart = { x: clientX - panX, y: clientY - panY };
+                return;
+            }
+
+            if (currentTool === 'select') {
+                // Check point hit first, then segment, then circle
+                let hitP = hitTestPoint(world.x, world.y);
+                if (hitP) {
+                    selectedObject = { type: 'point', id: hitP.id };
+                    isDragging = true;
+                    dragTarget = hitP;
+                } else {
+                    let hitS = hitTestSegment(world.x, world.y);
+                    if (hitS) {
+                        selectedObject = { type: 'segment', id: hitS.id };
+                    } else {
+                        let hitC = hitTestCircle(world.x, world.y);
+                        if (hitC) {
+                            selectedObject = { type: 'circle', id: hitC.id };
+                        } else {
+                            selectedObject = null;
+                            // Start canvas panning if clicking empty space
+                            isPanning = true;
+                            panStart = { x: clientX - panX, y: clientY - panY };
+                        }
+                    }
+                }
+                updateObjectList();
+                draw();
+            } else if (currentTool === 'point') {
+                // Create point at snapped location
+                const newPoint = {
+                    id: 'p_' + Date.now() + Math.random(),
+                    name: getNextPointName(),
+                    x: snapped.x,
+                    y: snapped.y,
+                    color: currentAccentColor
+                };
+                points.push(newPoint);
+                saveState();
+                draw();
+            } else if (currentTool === 'segment') {
+                let hitP = hitTestPoint(world.x, world.y);
+                if (!creationTemp || !creationTemp.pointId) {
+                    // Start point
+                    if (!hitP) {
+                        // Automatically create point if clicked on empty space
+                        hitP = {
+                            id: 'p_' + Date.now() + Math.random(),
+                            name: getNextPointName(),
+                            x: snapped.x,
+                            y: snapped.y,
+                            color: currentAccentColor
+                        };
+                        points.push(hitP);
+                    }
+                    creationTemp = { pointId: hitP.id, currentScreenX: sx, currentScreenY: sy };
+                } else {
+                    // End point
+                    if (!hitP) {
+                        hitP = {
+                            id: 'p_' + Date.now() + Math.random(),
+                            name: getNextPointName(),
+                            x: snapped.x,
+                            y: snapped.y,
+                            color: currentAccentColor
+                        };
+                        points.push(hitP);
+                    }
+                    if (creationTemp.pointId !== hitP.id) {
+                        segments.push({
+                            id: 's_' + Date.now() + Math.random(),
+                            p1Id: creationTemp.pointId,
+                            p2Id: hitP.id,
+                            color: currentAccentColor
+                        });
+                        saveState();
+                    }
+                    creationTemp = null;
+                }
+                draw();
+            } else if (currentTool === 'circle') {
+                let hitP = hitTestPoint(world.x, world.y);
+                if (!creationTemp || !creationTemp.centerId) {
+                    if (!hitP) {
+                        hitP = {
+                            id: 'p_' + Date.now() + Math.random(),
+                            name: getNextPointName(),
+                            x: snapped.x,
+                            y: snapped.y,
+                            color: currentAccentColor
+                        };
+                        points.push(hitP);
+                    }
+                    creationTemp = { centerId: hitP.id, currentScreenX: sx, currentScreenY: sy };
+                } else {
+                    if (!hitP) {
+                        hitP = {
+                            id: 'p_' + Date.now() + Math.random(),
+                            name: getNextPointName(),
+                            x: snapped.x,
+                            y: snapped.y,
+                            color: currentAccentColor
+                        };
+                        points.push(hitP);
+                    }
+                    if (creationTemp.centerId !== hitP.id) {
+                        circles.push({
+                            id: 'c_' + Date.now() + Math.random(),
+                            centerId: creationTemp.centerId,
+                            radiusPointId: hitP.id,
+                            color: currentAccentColor
+                        });
+                        saveState();
+                    }
+                    creationTemp = null;
+                }
+                draw();
+            }
+        }
+
+        function handlePointerMove(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            const sx = clientX - rect.left;
+            const sy = clientY - rect.top;
+            const world = screenToWorld(sx, sy);
+            const snapped = snapToGridCoords(world.x, world.y);
+
+            document.getElementById('coordX').textContent = snapped.x.toFixed(2);
+            document.getElementById('coordY').textContent = snapped.y.toFixed(2);
+
+            if (isPanning) {
+                panX = clientX - panStart.x;
+                panY = clientY - panStart.y;
+                draw();
+                return;
+            }
+
+            if (isDragging && dragTarget) {
+                dragTarget.x = snapped.x;
+                dragTarget.y = snapped.y;
+                draw();
+                return;
+            }
+
+            if (creationTemp) {
+                creationTemp.currentScreenX = sx;
+                creationTemp.currentScreenY = sy;
+                draw();
+                return;
+            }
+
+            // Hover effects
+            if (currentTool === 'select') {
+                hoverObject = hitTestPoint(world.x, world.y);
+                draw();
+            }
+        }
+
+        function handlePointerUp() {
+            if (isDragging) {
+                saveState();
+            }
+            isDragging = false;
+            dragTarget = null;
+            isPanning = false;
+        }
+
+        // --- UI Toolbar Setup ---
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTool = btn.getAttribute('data-tool');
+                creationTemp = null;
+                document.getElementById('modeStatus').textContent = btn.getAttribute('data-tooltip').split('/')[0].trim();
+                draw();
+            });
+        });
+
+        // --- Sidebar Tab Switching ---
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.getAttribute('data-tab');
+                document.getElementById('tab-objects').style.display = target === 'objects' ? 'block' : 'none';
+                document.getElementById('tab-settings').style.display = target === 'settings' ? 'block' : 'none';
+            });
+        });
+
+        // Mobile sidebar toggle handle
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebarToggleHandle').addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+        });
+
+        // --- Settings Controls Binding ---
+        document.getElementById('toggleGrid').addEventListener('change', e => { settings.grid = e.target.checked; draw(); });
+        document.getElementById('toggleAxes').addEventListener('change', e => { settings.axes = e.target.checked; draw(); });
+        document.getElementById('toggleSnap').addEventListener('change', e => { settings.snap = e.target.checked; });
+        document.getElementById('toggleMeasurements').addEventListener('change', e => { settings.measurements = e.target.checked; draw(); });
+        
+        const gridSizeRange = document.getElementById('gridSizeRange');
+        gridSizeRange.addEventListener('input', e => {
+            settings.gridSize = parseInt(e.target.value);
+            document.getElementById('gridSizeVal').textContent = settings.gridSize + 'px';
+            draw();
+        });
+
+        // --- Object Manager List Sync ---
+        function updateObjectList() {
+            const listEl = document.getElementById('objectList');
+            listEl.innerHTML = '';
+
+            // Points
+            points.forEach(p => {
+                const item = createObjectListItem(
+                    `Point ${p.name} (${p.x.toFixed(1)}, ${p.y.toFixed(1)})`,
+                    p.color || currentAccentColor,
+                    selectedObject && selectedObject.type === 'point' && selectedObject.id === p.id,
+                    () => { selectedObject = { type: 'point', id: p.id }; updateObjectList(); draw(); },
+                    () => { deletePoint(p.id); }
+                );
+                listEl.appendChild(item);
+            });
+
+            // Segments
+            segments.forEach(seg => {
+                const p1 = getPoint(seg.p1Id);
+                const p2 = getPoint(seg.p2Id);
+                const label = p1 && p2 ? `Segment [${p1.name}${p2.name}]` : 'Segment';
+                const item = createObjectListItem(
+                    label,
+                    seg.color || currentAccentColor,
+                    selectedObject && selectedObject.type === 'segment' && selectedObject.id === seg.id,
+                    () => { selectedObject = { type: 'segment', id: seg.id }; updateObjectList(); draw(); },
+                    () => { deleteSegment(seg.id); }
+                );
+                listEl.appendChild(item);
+            });
+
+            // Circles
+            circles.forEach(circ => {
+                const center = getPoint(circ.centerId);
+                const label = center ? `Cercle (${center.name})` : 'Cercle';
+                const item = createObjectListItem(
+                    label,
+                    circ.color || currentAccentColor,
+                    selectedObject && selectedObject.type === 'circle' && selectedObject.id === circ.id,
+                    () => { selectedObject = { type: 'circle', id: circ.id }; updateObjectList(); draw(); },
+                    () => { deleteCircle(circ.id); }
+                );
+                listEl.appendChild(item);
+            });
+        }
+
+        function createObjectListItem(title, color, isSelected, onSelect, onDelete) {
+            const div = document.createElement('div');
+            div.className = `object-item ${isSelected ? 'selected' : ''}`;
+            
+            const info = document.createElement('div');
+            info.className = 'object-info';
+            info.innerHTML = `<div class="color-dot" style="background: ${color}"></div><span>${title}</span>`;
+            info.onclick = onSelect;
+
+            const actions = document.createElement('div');
+            actions.className = 'object-actions';
+            
+            const delBtn = document.createElement('button');
+            delBtn.className = 'icon-btn danger';
+            delBtn.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>`;
+            delBtn.onclick = (e) => { e.stopPropagation(); onDelete(); };
+
+            actions.appendChild(delBtn);
+            div.appendChild(info);
+            div.appendChild(actions);
+            return div;
+        }
+
+        // --- Deletion Handlers ---
+        function deletePoint(id) {
+            // Remove connected segments & circles first
+            segments = segments.filter(s => s.p1Id !== id && s.p2Id !== id);
+            circles = circles.filter(c => c.centerId !== id && c.radiusPointId !== id);
+            points = points.filter(p => p.id !== id);
+            selectedObject = null;
+            saveState();
+            draw();
+        }
+
+        function deleteSegment(id) {
+            segments = segments.filter(s => s.id !== id);
+            selectedObject = null;
+            saveState();
+            draw();
+        }
+
+        function deleteCircle(id) {
+            circles = circles.filter(c => c.id !== id);
+            selectedObject = null;
+            saveState();
+            draw();
+        }
+
+        // --- Top Header Action Bindings ---
+        document.getElementById('btnUndo').addEventListener('click', undo);
+        document.getElementById('btnRedo').addEventListener('click', redo);
+
+        document.getElementById('btnClear').addEventListener('click', () => {
+            if (confirm("Voulez-vous vraiment effacer toutes les constructions ?")) {
+                points = [];
+                segments = [];
+                circles = [];
+                pointNameCounter = 0;
+                selectedObject = null;
+                creationTemp = null;
+                saveState();
+                draw();
+            }
+        });
+
+        // Export JSON
+        document.getElementById('btnExport').addEventListener('click', () => {
+            const data = {
+                points,
+                segments,
+                circles,
+                pointNameCounter,
+                settings
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'geometrie-export.json';
+            a.download = 'novalyx_geometry.json';
             a.click();
             URL.revokeObjectURL(url);
-            setStatus('Export terminé');
-        }
+        });
 
-        function importData(e) {
+        // Import JSON
+        const fileInput = document.getElementById('fileInput');
+        document.getElementById('btnImport').addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', e => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = event => {
                 try {
-                    const importedObjects = JSON.parse(event.target.result);
-                    if (Array.isArray(importedObjects)) {
-                        objects = importedObjects;
-                        selectedObjects = [];
-                        tempPoint = null;
-                        tempSegment = null;
-                        tempCircle = null;
-                        saveToHistory();
-                        updateObjectList();
-                        draw();
-                        setStatus('Import terminé');
-                    } else {
-                        setStatus('Fichier invalide');
+                    const data = JSON.parse(event.target.result);
+                    points = data.points || [];
+                    segments = data.segments || [];
+                    circles = data.circles || [];
+                    pointNameCounter = data.pointNameCounter || 0;
+                    if (data.settings) {
+                        Object.assign(settings, data.settings);
                     }
+                    saveState();
+                    draw();
                 } catch (err) {
-                    setStatus('Erreur lors de l\'import');
+                    alert("Erreur lors de l'importation du fichier JSON.");
                 }
             };
             reader.readAsText(file);
-            e.target.value = '';
-        }
+            fileInput.value = '';
+        });
 
-        // ========== START ==========
-        window.onload = init;
+        // --- Startup Initialization ---
+        initView();
+        saveState(); // Save initial blank state
+        resizeCanvas();
+
     </script>
 </body>
 </html>
