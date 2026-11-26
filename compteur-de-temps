@@ -1,164 +1,505 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b20">
 <title>Temps Infini Ultimate</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    color:white;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    height:100vh;
+:root {
+    --gold: #ffd166;
+    --accent: #ffd166;
+    --bg: #080b20;
+    --glass: rgba(255,255,255,.07);
 }
 
-/* GALAXY BACKGROUND */
-body::before{
-    content:"";
-    position:fixed;
-    width:200%;
-    height:200%;
-    background:radial-gradient(white 1px, transparent 1px);
-    background-size:3px 3px;
-    animation:stars 60s linear infinite;
-    z-index:-1;
+* {
+    box-sizing: border-box;
 }
 
-@keyframes stars{
-    from{transform:translate(0,0)}
-    to{transform:translate(-500px,-500px)}
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+    background:
+        radial-gradient(ellipse at 50% 40%, #202552 0%, #0b102b 45%, #030510 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* TIMER */
-#timer{
-    font-size:2em;
-    margin-bottom:10px;
+.stars {
+    position: fixed;
+    inset: -100%;
+    pointer-events: none;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(#8daaff 1px, transparent 1px);
+    background-size: 65px 65px, 110px 110px;
+    background-position: 0 0, 30px 40px;
+    opacity: .5;
+    animation: stars 100s linear infinite;
 }
 
-/* QUOTE */
-#quote{
-    font-style:italic;
-    opacity:0.8;
-    margin-bottom:20px;
+@keyframes stars {
+    to { transform: translate(250px, 250px); }
 }
 
-/* HOURGLASS */
-.hourglass{
-    position:relative;
-    width:140px;
-    height:220px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+.app {
+    position: relative;
+    width: min(92%, 480px);
+    padding: 35px 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 30px;
+    background: rgba(10,15,40,.72);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 80px #0008;
 }
 
-.bulb{
-    width:100px;
-    height:90px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.05);
-    box-shadow:inset 0 0 20px rgba(255,255,255,0.2);
+h1 {
+    margin: 0 0 8px;
+    font-size: 27px;
+    letter-spacing: 3px;
+    color: var(--accent);
 }
 
-.stream{
-    width:6px;
-    height:30px;
-    background:gold;
-    animation:flow 1s linear infinite;
+.subtitle {
+    font-size: 12px;
+    color: #aeb8df;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
 }
 
-@keyframes flow{
-    0%{height:0}
-    50%{height:30px}
-    100%{height:0}
+#timer {
+    font-size: clamp(38px, 10vw, 55px);
+    font-weight: 200;
+    letter-spacing: 4px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 25px var(--accent);
 }
 
-/* WATCH */
-.watch{
-    display:none;
-    width:220px;
-    height:220px;
-    border-radius:50%;
-    position:relative;
+#quote {
+    margin: 12px 0 30px;
+    color: #c3c9e4;
+    font-style: italic;
+    font-size: 14px;
 }
 
-.hand{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform-origin:bottom;
-    transform:translate(-50%,-100%);
+/* Sablier */
+
+.hourglass {
+    height: 245px;
+    width: 150px;
+    margin: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 0 15px var(--accent));
 }
 
-.hour{width:6px;height:50px;background:white;}
-.minute{width:4px;height:70px;background:white;}
-.second{width:2px;height:90px;background:red;}
+.bulb {
+    width: 112px;
+    height: 105px;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid var(--accent);
+    background: linear-gradient(135deg,#ffffff20,#ffffff03);
+    backdrop-filter: blur(5px);
+}
 
-/* BUTTONS */
-button, select{
-    margin-top:10px;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    background:#ffffff20;
-    color:white;
-    backdrop-filter:blur(10px);
+.top {
+    border-radius: 55% 55% 12% 12%;
+}
+
+.bottom {
+    border-radius: 12% 12% 55% 55%;
+}
+
+.sand {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(135deg,#ffe8a3,var(--accent),#bd7a18);
+    transition: height .3s linear;
+}
+
+.top .sand {
+    bottom: 0;
+}
+
+.bottom .sand {
+    bottom: 0;
+}
+
+.neck {
+    width: 10px;
+    height: 35px;
+    background: var(--accent);
+    position: relative;
+    z-index: 2;
+    border-radius: 5px;
+}
+
+.stream {
+    position: absolute;
+    z-index: 3;
+    top: 104px;
+    width: 3px;
+    height: 35px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    transform-origin: top;
+    animation: flow .7s ease-in-out infinite;
+}
+
+@keyframes flow {
+    0%,100% { opacity: .2; transform: scaleY(.2); }
+    50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* Montre */
+
+.watch {
+    width: 220px;
+    height: 220px;
+    margin: 12px auto;
+    border: 5px solid var(--accent);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 30px #ffd16644,
+                inset 0 0 30px #ffffff12;
+    background: radial-gradient(circle,#1a2141,#090d21);
+    display: none;
+}
+
+.tick {
+    position: absolute;
+    width: 3px;
+    height: 9px;
+    background: white;
+    left: 50%;
+    top: 8px;
+    transform-origin: 50% 97px;
+}
+
+.center {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 5;
+}
+
+.hand {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform-origin: bottom center;
+    border-radius: 10px;
+}
+
+.hour { width: 5px; height: 53px; background: white; }
+.minute { width: 3px; height: 72px; background: #b8c7ff; }
+.second { width: 2px; height: 83px; background: #ff5252; }
+
+/* Commandes */
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+button, select {
+    border: 1px solid #ffffff25;
+    padding: 12px 17px;
+    border-radius: 13px;
+    background: var(--glass);
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    backdrop-filter: blur(10px);
+    transition: .2s;
+}
+
+button:hover, select:hover {
+    background: var(--accent);
+    color: #101323;
+    transform: translateY(-2px);
+}
+
+select option {
+    background: #10152e;
+    color: white;
+}
+
+.status {
+    color: #aab5d9;
+    font-size: 12px;
+    margin-top: 20px;
+}
+
+.footer {
+    color: #7884ad;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 25px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media(max-width:400px) {
+    .app { padding: 28px 15px; }
+    button,select { padding: 10px 12px; }
 }
 </style>
 </head>
 
 <body>
 
-<div id="timer">00:00:00</div>
-<div id="quote">Le temps file…</div>
+<div class="stars"></div>
 
-<div class="hourglass" id="hourglass">
-    <div class="bulb" id="top"></div>
-    <div class="stream" id="stream"></div>
-    <div class="bulb" id="bottom"></div>
-</div>
+<main class="app">
 
-<div class="watch" id="watch">
-    <div class="hand hour" id="hour"></div>
-    <div class="hand minute" id="minute"></div>
-    <div class="hand second" id="second"></div>
-</div>
+    <h1>TEMPS INFINI</h1>
+    <div class="subtitle">ULTIMATE EDITION</div>
 
-<button onclick="switchMode()">⏳ / ⌚</button>
+    <div id="timer">00:00:00</div>
 
-<select onchange="changeWatch(this.value)">
-    <option value="gold">💎 Gold</option>
-    <option value="silver">⚪ Silver</option>
-    <option value="dark">🖤 Dark</option>
-</select>
+    <div id="quote">« Le temps est précieux. Profite de chaque seconde. »</div>
 
-<audio id="sandSound" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b46c3.mp3?filename=sand-falling-110624.mp3">
+    <div class="hourglass" id="hourglass">
+        <div class="bulb top">
+            <div class="sand" id="topSand"></div>
+        </div>
+
+        <div class="neck"></div>
+        <div class="stream" id="stream"></div>
+
+        <div class="bulb bottom">
+            <div class="sand" id="bottomSand"></div>
+        </div>
+    </div>
+
+    <div class="watch" id="watch">
+        <div id="ticks"></div>
+        <div class="hand hour" id="hour"></div>
+        <div class="hand minute" id="minute"></div>
+        <div class="hand second" id="second"></div>
+        <div class="center"></div>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn">▶ Démarrer</button>
+        <button id="resetBtn">↺ Réinitialiser</button>
+        <button id="modeBtn">⏳ / ⌚</button>
+    </div>
+
+    <div class="controls">
+        <select id="theme">
+            <option value="gold">💎 Gold</option>
+            <option value="silver">⚪ Silver</option>
+            <option value="dark">🖤 Dark</option>
+        </select>
+
+        <button id="soundBtn">🔇 Son OFF</button>
+    </div>
+
+    <div class="status" id="status">En pause</div>
+
+    <div class="footer">TIME IS INFINITE</div>
+
+</main>
+
+<audio id="sandSound" loop preload="none">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b46c3.mp3?filename=sand-falling-110624.mp3">
 </audio>
 
 <script>
-// GET ELEMENTS
-const timer = document.getElementById("timer");
-const quote = document.getElementById("quote");
-const stream = document.getElementById("stream");
-const hourglass = document.getElementById("hourglass");
-const watch = document.getElementById("watch");
-const sandSound = document.getElementById("sandSound");
+const $ = id => document.getElementById(id);
 
-const hourHand = document.getElementById("hour");
-const minuteHand = document.getElementById("minute");
-const secondHand = document.getElementById("second");
-
-// TIMER
 let elapsed = 0;
-setInterval(()=>{
-    elapsed++;
-    let h = String(Math.floor(elapsed/3600)).padStart(2,'0');
-    let m = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
-    let s = String(elapsed%
+let running = false;
+let lastTime = null;
+let mode = "sand";
+let soundEnabled = false;
+let animationFrame = null;
+
+const quotes = [
+    "« Le temps est précieux. »",
+    "« Chaque seconde est une nouvelle chance. »",
+    "« Le futur commence maintenant. »",
+    "« Le temps n'attend personne. »",
+    "« Vis chaque instant pleinement. »"
+];
+
+function formatTime(ms) {
+    const total = Math.floor(ms / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+
+    return [h,m,s]
+        .map(v => String(v).padStart(2,"0"))
+        .join(":");
+}
+
+function update() {
+    $("timer").textContent = formatTime(elapsed);
+
+    const progress = (elapsed % 60000) / 60000;
+
+    $("topSand").style.height = (100-progress*100) + "%";
+    $("bottomSand").style.height = (progress*100) + "%";
+}
+
+function tick(timestamp) {
+    if (!running) return;
+
+    if (lastTime !== null) {
+        elapsed += timestamp - lastTime;
+    }
+
+    lastTime = timestamp;
+    update();
+
+    animationFrame = requestAnimationFrame(tick);
+}
+
+function start() {
+    if (running) {
+        running = false;
+        lastTime = null;
+        cancelAnimationFrame(animationFrame);
+        $("startBtn").textContent = "▶ Reprendre";
+        $("status").textContent = "En pause";
+
+        $("sandSound").pause();
+        return;
+    }
+
+    running = true;
+    lastTime = null;
+    $("startBtn").textContent = "⏸ Pause";
+    $("status").textContent = "Temps en cours...";
+
+    if (soundEnabled) {
+        $("sandSound").play().catch(() => {});
+    }
+
+    animationFrame = requestAnimationFrame(tick);
+}
+
+function reset() {
+    running = false;
+    elapsed = 0;
+    lastTime = null;
+
+    cancelAnimationFrame(animationFrame);
+
+    $("startBtn").textContent = "▶ Démarrer";
+    $("status").textContent = "Réinitialisé";
+
+    $("sandSound").pause();
+    $("sandSound").currentTime = 0;
+
+    update();
+}
+
+function switchMode() {
+    mode = mode === "sand" ? "watch" : "sand";
+
+    $("hourglass").style.display =
+        mode === "sand" ? "flex" : "none";
+
+    $("watch").style.display =
+        mode === "watch" ? "block" : "none";
+}
+
+function changeTheme(theme) {
+    const themes = {
+        gold: "#ffd166",
+        silver: "#dce5f5",
+        dark: "#a58bff"
+    };
+
+    document.documentElement.style.setProperty(
+        "--accent", themes[theme]
+    );
+}
+
+function updateWatch() {
+    const now = new Date();
+
+    const ms = now.getMilliseconds();
+    const seconds = now.getSeconds() + ms/1000;
+    const minutes = now.getMinutes() + seconds/60;
+    const hours = (now.getHours()%12) + minutes/60;
+
+    $("second").style.transform =
+        `translateX(-50%) rotate(${seconds*6}deg)`;
+
+    $("minute").style.transform =
+        `translateX(-50%) rotate(${minutes*6}deg)`;
+
+    $("hour").style.transform =
+        `translateX(-50%) rotate(${hours*30}deg)`;
+
+    requestAnimationFrame(updateWatch);
+}
+
+// Graduation de la montre
+for (let i=0; i<12; i++) {
+    const tick = document.createElement("div");
+    tick.className = "tick";
+    tick.style.transform = `translateX(-50%) rotate(${i*30}deg)`;
+    $("ticks").appendChild(tick);
+}
+
+$("startBtn").addEventListener("click", start);
+$("resetBtn").addEventListener("click", reset);
+$("modeBtn").addEventListener("click", switchMode);
+
+$("theme").addEventListener("change", e => {
+    changeTheme(e.target.value);
+});
+
+$("soundBtn").addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+
+    $("soundBtn").textContent =
+        soundEnabled ? "🔊 Son ON" : "🔇 Son OFF";
+
+    if (running && soundEnabled) {
+        $("sandSound").play().catch(() => {});
+    } else {
+        $("sandSound").pause();
+    }
+});
+
+setInterval(() => {
+    $("quote").textContent =
+        quotes[Math.floor(Math.random()*quotes.length)];
+}, 12000);
+
+update();
+updateWatch();
+</script>
+
+</body>
+</html>
